@@ -11,6 +11,7 @@
 typedef struct _TetWin{
     TetCanvas* canvas;
     TetCanvas* preview;
+    TetShape*shape;
     GtkWidget* info;
     
     GtkWidget* start,*stop,*pause;

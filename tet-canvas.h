@@ -20,7 +20,7 @@ typedef struct _canvas {
 
 
 
-TetCanvas *tet_canvas_new(int height,int width);
+TetCanvas *tet_canvas_new(int height,int width,int block_siz);
 void tet_canvas_free(TetCanvas * canvas);
 
 void tet_canvas_color_all(TetCanvas * canvas, char *rgba);
@@ -29,8 +29,16 @@ void tet_canvas_clear_all(TetCanvas * canvas);
 void tet_canvas_color_block(TetCanvas * can, gint i, gint j, char *rgba);
 void tet_canvas_clear_block(TetCanvas * can, gint i, gint j);
 
+//gboolean tet_canvas_copy_block(TetCanvas*canvas,int i,int j,int ii,int jj);
+//gboolean tet_canvas_copy_fill(TetCanvas*canvas,int i,int j,int ii,int jj);
+
+void tet_canvas_eliminate(TetCanvas*canvas,int baseline);
+
+
+
 inline void tet_canvas_fill(TetCanvas * canvas, int i, int j,
 			    gboolean fill);
+inline void tet_canvas_fill_all(TetCanvas * canvas,gboolean fill);
 
 void tet_canvas_free(TetCanvas * canvas);
 

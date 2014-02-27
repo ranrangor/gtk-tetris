@@ -42,7 +42,7 @@ gboolean is_filled(TetCanvas * canvas, gint i, gint j)
 
 
 
-TetCanvas *tet_canvas_new(int height,int width)
+TetCanvas *tet_canvas_new(int height,int width,int block_siz)
 {
     TetCanvas *canvas = g_slice_new(TetCanvas);
     canvas->container = gtk_grid_new();	//g_malloc(sizeof(GtkWidget*));
@@ -65,8 +65,8 @@ TetCanvas *tet_canvas_new(int height,int width)
 	    g_free(w);
 	    gtk_grid_attach(GTK_GRID(canvas->container),
 			    canvas->grid[i*width+j], j, i, 1, 1);
-	    gtk_widget_set_size_request(canvas->grid[i*width+j], BLOCK_SIZE,
-					BLOCK_SIZE);
+	    gtk_widget_set_size_request(canvas->grid[i*width+j], block_siz,
+					block_siz);
 	}
 
     }
@@ -142,6 +142,22 @@ void tet_canvas_fill(TetCanvas * canvas, int i, int j, gboolean fill)
 
 }
 
+inline void tet_canvas_fill_all(TetCanvas * canvas,gboolean fill)
+{
+    int i, j;
+    int width=canvas->width;
+    int height=canvas->height;
+    for (i = 0; i < height; i++) {
+	for (j = 0; j < width; j++) {
+        canvas->filling[i*width+j]=fill;
+	}
+    }
+
+
+
+
+
+}
 
 void tet_canvas_color_block(TetCanvas * canvas, gint i, gint j,
 			    gchar * rgba)
@@ -177,5 +193,64 @@ void tet_canvas_clear_block(TetCanvas * canvas, gint i, gint j)
 					 &color);
 
 //    canvas->filling[i][j]=FALSE;
+
+}
+
+
+
+/*
+gboolean tet_canvas_copy_block(TetCanvas*canvas,int i,int j,int ii,int jj)
+{
+}
+
+gboolean tet_canvas_copy_fill(TetCanvas*canvas,int i,int j,int ii,int jj)
+{
+}
+
+*/
+
+
+void tet_canvas_eliminate(TetCanvas*canvas,int baseline)
+{
+    int i, j;
+    int width=canvas->width;
+    int height=canvas->height;
+    gboolean flag;
+    if(baseline>height)
+        baseline=height;
+
+    for (i = baseline; i >=0; i--) {
+    flag=TRUE;
+	for (j = 0; j < width; j++) {
+	    if(!is_filled(canvas,i,j)){
+        flag=FALSE;
+        break;
+        }
+	}
+
+    if(flag){//need to eliminat current line,and move all lines beyond to down
+    
+        int ii,jj;
+        for (ii=i-1;ii>=0;i--){
+        
+            for(jj=0;jj<width;jj++){
+            
+                if(is_filled(canvas,ii,jj)){
+                tet_canvas_color_block(canvas,ii+1,jj,COLOR_FILL);
+                tet_canvas_fill(canvas,ii+1,jj,TRUE);
+                }else{
+                tet_canvas_clear_block(canvas,ii+1,jj);
+                tet_canvas_fill(canvas,ii+1,jj,FALSE);
+                
+                }
+//            tet_canvas_copy_block(canvas,ii,jj,ii+1,jj);
+//            tet_canvas_copy_fill(canvas,ii,jj,ii+1,jj);
+            }
+        
+        }
+    
+    }
+    }
+
 
 }

@@ -63,14 +63,14 @@ void shape_path_assign(TetShape * shape, Point * path)
 
 
 
-TetShape *tet_shape_new(TetCanvas * canvas, Shape type)
+TetShape *tet_shape_new(TetCanvas * canvas,int x,int y,Shape type)
 {
 
     TetShape *shape = g_slice_new0(TetShape);
 
     shape->canvas = canvas;
-    shape->x = shape->lx = 0;
-    shape->y = shape->ly = (int) (CANVAS_WIDTH / 2);
+    shape->x = shape->lx = x;
+    shape->y = shape->ly = y;
     shape->type = type;
 
 
@@ -224,6 +224,35 @@ void tet_shape_realize(TetShape * shape)
 
 }
 
+void tet_shape_move(TetShape*shape,int x,int y)
+{
+
+    int i;
+    while (realize_locked);
+    realize_locked = TRUE;
+
+    shape_path_save(shape);
+    //copy path to lpath
+
+    for (i = 0; i < SHAPE_STEP; i++) {
+	int x, y;
+	x = shape->path[i].x + shape->x;
+	y = shape->path[i].y + shape->y;
+//      tet_canvas_clear_block(shape->canvas, x, y);
+    tet_canvas_fill(shape->canvas,x,y,FALSE);
+//	shape->canvas->filling[x][y] = FALSE;
+    }
+
+//    printf("\n[x:%d,y:%d]-->",shape->x,shape->y);
+    shape->ly = shape->y;
+    shape->lx = shape->x;
+    shape->x = x;
+    shape->y = y;
+//    printf("[x:%d,y:%d]\n",shape->x,shape->y);
+
+    realize_locked = FALSE;
+
+}
 
 void tet_shape_move_up(TetShape * shape)
 {

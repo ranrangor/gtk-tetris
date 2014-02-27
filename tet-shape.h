@@ -94,13 +94,14 @@ void shape_path_save(TetShape * shape);
 void shape_path_swap(TetShape * shape);
 //static void shape_path_fill()
 
-TetShape *tet_shape_new(TetCanvas * canvas, Shape type);
+TetShape *tet_shape_new(TetCanvas * canvas, int x,int y,Shape type);
 void tet_shape_free(TetShape * shape);
 
 void tet_shape_transform(TetShape * shape);
 static void tet_shape_align_border(TetShape * ahape);	//invoked by transform only;
 CollisionType tet_shape_is_collision(TetShape * shape);
 
+void tet_shape_move(TetShape*shape,int x,int y);
 void tet_shape_move_up(TetShape * shape);
 void tet_shape_move_down(TetShape * shape);
 void tet_shape_move_left(TetShape * shape);
