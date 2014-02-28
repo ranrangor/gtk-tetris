@@ -60,9 +60,9 @@ TetCanvas *tet_canvas_new(int height,int width,int block_siz)
 
 	for (j = 0; j < width; j++) {
 	    canvas->filling[i*width+j] = FALSE;
-	    gchar *w = g_strdup_printf("[%d.%d]", i, j);
+	    gchar *w =""; //g_strdup_printf("[%d.%d]", i, j);
 	    canvas->grid[i*width+j] = gtk_label_new(w);
-	    g_free(w);
+	   // g_free(w);
 	    gtk_grid_attach(GTK_GRID(canvas->container),
 			    canvas->grid[i*width+j], j, i, 1, 1);
 	    gtk_widget_set_size_request(canvas->grid[i*width+j], block_siz,
@@ -212,6 +212,7 @@ gboolean tet_canvas_copy_fill(TetCanvas*canvas,int i,int j,int ii,int jj)
 
 void tet_canvas_eliminate(TetCanvas*canvas,int baseline)
 {
+    g_message("Eliminate..");
     int i, j;
     int width=canvas->width;
     int height=canvas->height;
@@ -229,9 +230,9 @@ void tet_canvas_eliminate(TetCanvas*canvas,int baseline)
 	}
 
     if(flag){//need to eliminat current line,and move all lines beyond to down
-    
+        g_message("Line:%d to be eliminating..",i); 
         int ii,jj;
-        for (ii=i-1;ii>=0;i--){
+        for (ii=i-1;ii>=0;ii--){
         
             for(jj=0;jj<width;jj++){
             

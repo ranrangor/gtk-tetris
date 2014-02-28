@@ -13,7 +13,7 @@ TetWin* tet_window_new()
     tetwin->window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
     tetwin->preview=tet_canvas_new(PREVIEW_HEIGHT,PREVIEW_WIDTH,PREVIEW_BSIZ);
     tetwin->canvas=tet_canvas_new(CANVAS_HEIGHT,CANVAS_WIDTH,CANVAS_BSIZ);
-    tetwin->info=gtk_label_new("");
+    tetwin->info=gtk_label_new("===Info===");
     
     tetwin->start=gtk_button_new_with_label("Start");
     tetwin->stop=gtk_button_new_with_label("Stop");
@@ -30,7 +30,7 @@ TetWin* tet_window_new()
     gtk_box_pack_end(GTK_BOX(panelbox),tetwin->pause,FALSE,FALSE,0);
     gtk_box_pack_end(GTK_BOX(panelbox),tetwin->start,FALSE,FALSE,0);
 
-    gtk_box_pack_start(GTK_BOX(box),panelbox,FALSE,FALSE,0);
+    gtk_box_pack_end(GTK_BOX(box),panelbox,FALSE,FALSE,0);
     gtk_container_add(GTK_CONTAINER(tetwin->window),box);
 
 
@@ -59,6 +59,22 @@ void tet_window_set_preview(TetWin*win,Shape type)
 
 
 }
+
+
+void tet_window_set_shape(TetWin*win,Shape type)
+{
+
+    TetShape*shape=tet_shape_new(win->canvas,0,0,type);
+
+//    tet_shape_realize(shape);
+
+
+}
+
+
+
+
+
 
 void tet_window_set_info(TetWin*win,char*text)
 {
