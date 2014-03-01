@@ -3,20 +3,8 @@
 
 
 
-
 gboolean is_filled(TetCanvas * canvas, gint i, gint j)
 {
-    /*
-       if(i<0||j<0){
-       return TRUE;
-       }else if(i>=CANVAS_HEIGHT){
-       return TRUE;
-       }else if(j>=CANVAS_WIDTH){
-       return TRUE;
-       }else{
-       return can->filling[i][j];
-       }
-     */
 
     int width=canvas->width;
     int height=canvas->height;
@@ -34,6 +22,9 @@ gboolean is_filled(TetCanvas * canvas, gint i, gint j)
     }
 
 }
+
+
+
 
 
 
@@ -142,7 +133,7 @@ void tet_canvas_fill(TetCanvas * canvas, int i, int j, gboolean fill)
 
 }
 
-inline void tet_canvas_fill_all(TetCanvas * canvas,gboolean fill)
+void tet_canvas_fill_all(TetCanvas * canvas,gboolean fill)
 {
     int i, j;
     int width=canvas->width;
@@ -210,17 +201,18 @@ gboolean tet_canvas_copy_fill(TetCanvas*canvas,int i,int j,int ii,int jj)
 */
 
 
-void tet_canvas_eliminate(TetCanvas*canvas,int baseline)
+int tet_canvas_eliminate(TetCanvas*canvas,int baseline)
 {
+    int n_eliminated=0;
     g_message("Eliminate..");
     int i, j;
     int width=canvas->width;
     int height=canvas->height;
     gboolean flag;
-    if(baseline>height)
-        baseline=height;
+    if(baseline>=height)
+        baseline=height-1;
 
-    for (i = baseline; i >=0; i--) {
+    for (i = baseline; i >=0; ) {
     flag=TRUE;
 	for (j = 0; j < width; j++) {
 	    if(!is_filled(canvas,i,j)){
@@ -231,6 +223,7 @@ void tet_canvas_eliminate(TetCanvas*canvas,int baseline)
 
     if(flag){//need to eliminat current line,and move all lines beyond to down
         g_message("Line:%d to be eliminating..",i); 
+        n_eliminated+=1;
         int ii,jj;
         for (ii=i-1;ii>=0;ii--){
         
@@ -250,8 +243,11 @@ void tet_canvas_eliminate(TetCanvas*canvas,int baseline)
         
         }
     
+    }else{
+    i--;
     }
     }
 
+    return n_eliminated;
 
 }

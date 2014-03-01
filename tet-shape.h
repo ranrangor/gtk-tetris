@@ -2,7 +2,6 @@
 #define __H_SHAPE_TET_
 
 
-#include<gtk/gtk.h>
 #include"tet-canvas.h"
 #include"tet-config.h"
 
@@ -11,17 +10,20 @@
 typedef enum _CollisionType {
     COLLISION_NONE = 0,
     COLLISION_FILL = 1,
-    COLLISION_BOTTOM = 2
+    COLLISION_BOTTOM = 2,
+    COLLISION_TOP= 4
+//    COLLISION_DOWN = 4
 //,COLLISION_SIDE=4
 } CollisionType;
 
 
 
-typedef enum _Shape {		/*
-				 *    ##
-				 *    ##
-				 *
-				 * */
+typedef enum _Shape {		
+    /*
+	 *    ##
+	 *    ##
+	 *
+	 * */
     TET_O0 = 4,
 
     /*    #
@@ -39,8 +41,6 @@ typedef enum _Shape {		/*
      * */
     TET_Z0 = 16, TET_Z1,
 
-
-
     /*    
      *    #
      *    #
@@ -57,6 +57,9 @@ typedef enum _Shape {		/*
 //    TET_T0=64,TET_T1,TET_T2,TET_T3,
     TET_LAST
 } Shape;
+
+
+extern Shape shapepool;
 
 typedef struct _point {
     int x;
@@ -87,6 +90,10 @@ typedef struct _TetShape {
 
 #define FOR_PATH_END }
 
+
+void shape_print(TetShape * shape, char *text);
+
+Shape get_shape_type();
 
 
 void shape_path_assign(TetShape * shape, Point * path);

@@ -62,6 +62,15 @@ void shape_path_assign(TetShape * shape, Point * path)
 }
 
 
+Shape get_shape_type()
+{
+static GRand*random;
+random=g_rand_new();
+static Shape shapepool[5]={TET_O0,TET_I0,TET_I1,TET_Z0,TET_Z1};
+
+return shapepool[g_rand_int(random)%5];
+
+}
 
 TetShape *tet_shape_new(TetCanvas * canvas,int x,int y,Shape type)
 {
@@ -129,7 +138,15 @@ CollisionType tet_shape_is_collision(TetShape * shape)
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
 
-	if (x >= CANVAS_HEIGHT) {
+
+    if(x<0){
+    
+        type|=COLLISION_TOP;
+	    g_message("TOP[%d,%d]", x, y);
+    
+    }
+
+	if (x >= shape->canvas->height) {
 	    type |= COLLISION_BOTTOM;
 	    g_message("BOTTOM[%d,%d]", x, y);
 //        break;

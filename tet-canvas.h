@@ -32,18 +32,21 @@ void tet_canvas_clear_block(TetCanvas * can, gint i, gint j);
 //gboolean tet_canvas_copy_block(TetCanvas*canvas,int i,int j,int ii,int jj);
 //gboolean tet_canvas_copy_fill(TetCanvas*canvas,int i,int j,int ii,int jj);
 
-void tet_canvas_eliminate(TetCanvas*canvas,int baseline);
+int tet_canvas_eliminate(TetCanvas*canvas,int baseline);
 
 
 
-inline void tet_canvas_fill(TetCanvas * canvas, int i, int j,
+//inline 
+void tet_canvas_fill(TetCanvas * canvas, int i, int j,
 			    gboolean fill);
-inline void tet_canvas_fill_all(TetCanvas * canvas,gboolean fill);
+//inline 
+void tet_canvas_fill_all(TetCanvas * canvas,gboolean fill);
 
 void tet_canvas_free(TetCanvas * canvas);
 
 
-inline gboolean is_filled(TetCanvas * can, gint i, gint j);
+//inline 
+gboolean is_filled(TetCanvas * canvas, gint i, gint j);
 
 
 
