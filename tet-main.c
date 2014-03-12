@@ -1,7 +1,7 @@
 #include<gtk/gtk.h>
 #include<glib.h>
 
-#include"tet-canvas.h"
+#include"tet-checker.h"
 #include"tet-shape.h"
 
 GRand *random;			//=g_rand_new();
@@ -124,10 +124,10 @@ int main(int argc, char **argv)
     gtk_widget_set_size_request(window, 300, 600);
 
 
-    TetCanvas *canvas = tet_canvas_new(CANVAS_HEIGHT,CANVAS_WIDTH);
-    tet_canvas_clear_all(canvas);
+    TetChecker *checker = tet_checker_new(CHECKER_HEIGHT,CHECKER_WIDTH);
+    tet_checker_clear_all(checker);
 
-    TetShape *shape = tet_shape_new(canvas, TET_Z0);
+    TetShape *shape = tet_shape_new(checker, TET_Z0);
 
     tet_shape_realize(shape);
 //    tet_shape_move_down(shape);
@@ -146,7 +146,7 @@ int main(int argc, char **argv)
 //    shape->x=0;
 //    shape->y=0;
 
-    gtk_container_add(GTK_CONTAINER(window), canvas->container);
+    gtk_container_add(GTK_CONTAINER(window), checker->container);
 
     gtk_widget_show_all(window);
 

@@ -12,11 +12,11 @@ TetWin* tet_window_new()
     TetWin*tetwin=g_slice_new0(TetWin);
 
     tetwin->window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    tetwin->preview=tet_canvas_new(PREVIEW_HEIGHT,PREVIEW_WIDTH,PREVIEW_BSIZ);
-    tetwin->canvas=tet_canvas_new(CANVAS_HEIGHT,CANVAS_WIDTH,CANVAS_BSIZ);
+    tetwin->preview=tet_checker_new(PREVIEW_HEIGHT,PREVIEW_WIDTH,PREVIEW_BSIZ);
+    tetwin->checker=tet_checker_new(CHECKER_HEIGHT,CHECKER_WIDTH,CHECKER_BSIZ);
 
-  tet_canvas_clear_all (tetwin->canvas);
-  tet_canvas_clear_all (tetwin->preview);
+  tet_checker_clear_all (tetwin->checker);
+  tet_checker_clear_all (tetwin->preview);
 
     tetwin->info=gtk_label_new("===Info===\n  Score: -");
     
@@ -25,7 +25,7 @@ TetWin* tet_window_new()
     tetwin->pause=gtk_button_new_with_label("Pause");
 
     GtkWidget*box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,10);
-    gtk_box_pack_start(GTK_BOX(box),tetwin->canvas->container,FALSE,FALSE,0);
+    gtk_box_pack_start(GTK_BOX(box),tetwin->checker->container,FALSE,FALSE,0);
 
     GtkWidget*panelbox=gtk_box_new(GTK_ORIENTATION_VERTICAL,10);
     gtk_box_pack_start(GTK_BOX(panelbox),tetwin->preview->container,FALSE,FALSE,0);
@@ -62,8 +62,8 @@ void tet_window_set_preview(TetWin*win,Shape type)
 {
 
     /*Clean every shape at win->preview*/
-    tet_canvas_clear_all(win->preview);
-    tet_canvas_fill_all(win->preview,FALSE);
+    tet_checker_clear_all(win->preview);
+    tet_checker_fill_all(win->preview,FALSE);
 
     /*paint a new shape with type*/
     TetShape*shape=tet_shape_new(win->preview,win->preview->height-1,0,type);
@@ -81,7 +81,7 @@ void tet_window_set_shape(TetWin*win,TetShape *shape)
 {
     win->shape=shape;
 
-//    TetShape*shape=tet_shape_new(win->canvas,0,0,type);
+//    TetShape*shape=tet_shape_new(win->checker,0,0,type);
 
 //    tet_shape_realize(shape);
 

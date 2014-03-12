@@ -4,13 +4,13 @@
 #include<gtk/gtk.h>
 #include<glib.h>
 #include"tet-shape.h"
-#include"tet-canvas.h"
+#include"tet-checker.h"
 
 
 
 typedef struct _TetWin{
-    TetCanvas* canvas;
-    TetCanvas* preview;
+    TetChecker* checker;
+    TetChecker* preview;
     TetShape*shape;
     GtkWidget* info;
     

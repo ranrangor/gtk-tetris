@@ -1,7 +1,7 @@
 #include<gtk/gtk.h>
 #include<glib.h>
 
-#include"tet-canvas.h"
+#include"tet-checker.h"
 #include"tet-shape.h"
 #include"tet-tetris.h"
 
@@ -15,8 +15,8 @@
     int n_eliminated;
     CollisionType col;
 //    TetShape*shape=win->shape;
-    TetCanvas*canvas=win->canvas;
-    TetCanvas*preview=win->preview;
+    TetChecker*checker=win->checker;
+    TetChecker*preview=win->preview;
 
     /*fall*/
     tet_shape_move_down(win->shape);
@@ -28,7 +28,7 @@
 
     //can not fall anymore;
     tet_shape_move_restore(win->shape);
-    n_eliminated=tet_canvas_eliminate(canvas,win->shape->x);
+    n_eliminated=tet_checker_eliminate(checker,win->shape->x);
    win->score+=n_eliminated; 
 
     tet_window_set_info(win,".");
@@ -46,7 +46,7 @@
 //    gint tet_type=g_rand_int(random)%5;
 
     Shape next=get_shape_type();
-    nextshape=tet_shape_new(canvas,0,3,next);
+    nextshape=tet_shape_new(checker,0,3,next);
     tet_window_set_preview(win,next);
 
     col=tet_shape_is_collision(win->shape);
@@ -134,9 +134,9 @@ stop_cb (GtkWidget * widget, TetWin * tetwin)
     g_source_remove(tetwin->timeout);
     g_signal_handler_disconnect(tetwin->window,tetwin->key_sig_no);
 
-//  tet_canvas_clear_all (tetwin->canvas);
-//  tet_canvas_clear_all (tetwin->preview);
-//    tet_canvas_fill_all(tetwin->canvas,FALSE);
+//  tet_checker_clear_all (tetwin->checker);
+//  tet_checker_clear_all (tetwin->preview);
+//    tet_checker_fill_all(tetwin->checker,FALSE);
     
 //    tet_window_reset(tetwin);
 
@@ -178,24 +178,24 @@ void
 start_cb (GtkWidget * widget, TetWin * tetwin)
 {
 
-//  nextshape = tet_shape_new (win->canvas, 0, 0, TET_Z0);
+//  nextshape = tet_shape_new (win->checker, 0, 0, TET_Z0);
 //  win->can_oper = TRUE;
 //  tet_window_set_preview (win, TET_Z0);
 
     tet_window_reset(tetwin);
-  tet_canvas_clear_all (tetwin->canvas);
-  tet_canvas_clear_all (tetwin->preview);
-    tet_canvas_fill_all(tetwin->canvas,FALSE);
+  tet_checker_clear_all (tetwin->checker);
+  tet_checker_clear_all (tetwin->preview);
+    tet_checker_fill_all(tetwin->checker,FALSE);
 
 
     Shape cur,next;
     next=get_shape_type();
     tet_window_set_preview (tetwin, next);
-    nextshape = tet_shape_new (tetwin->canvas, 0, CANVAS_MID, next);
+    nextshape = tet_shape_new (tetwin->checker, 0, checker_MID, next);
   
 
     cur=get_shape_type();
-    curshape = tet_shape_new (tetwin->canvas, -1, CANVAS_MID, cur);
+    curshape = tet_shape_new (tetwin->checker, -1, checker_MID, cur);
     tetwin->shape=curshape;
     
 
@@ -226,10 +226,10 @@ random=g_rand_new();
   gtk_widget_show_all (tetwin->window);
 
 /*
-    nextshape = tet_shape_new (tetwin->canvas, 0, 0, TET_Z0);
+    nextshape = tet_shape_new (tetwin->checker, 0, 0, TET_Z0);
   tet_window_set_preview (tetwin, TET_Z0);
   
-    curshape = tet_shape_new (tetwin->canvas, -1, 0, TET_Z1);
+    curshape = tet_shape_new (tetwin->checker, -1, 0, TET_Z1);
     tetwin->shape=curshape;
     
 

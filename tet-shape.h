@@ -2,7 +2,7 @@
 #define __H_SHAPE_TET_
 
 
-#include"tet-canvas.h"
+#include"tet-checker.h"
 #include"tet-config.h"
 
 
@@ -71,7 +71,7 @@ typedef struct _point {
 typedef struct _TetShape {
     Point path[4];
     Point lpath[4];
-    TetCanvas *canvas;
+    TetChecker *checker;
     Shape type;
 //coordination about left-bottom of shape
     gint x;
@@ -101,7 +101,7 @@ void shape_path_save(TetShape * shape);
 void shape_path_swap(TetShape * shape);
 //static void shape_path_fill()
 
-TetShape *tet_shape_new(TetCanvas * canvas, int x,int y,Shape type);
+TetShape *tet_shape_new(TetChecker * checker, int x,int y,Shape type);
 void tet_shape_free(TetShape * shape);
 
 void tet_shape_transform(TetShape * shape);

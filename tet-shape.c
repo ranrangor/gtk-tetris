@@ -1,5 +1,5 @@
 #include"tet-shape.h"
-//#include"tet-canvas.h"
+//#include"tet-checker.h"
 
 
 volatile static gboolean realize_locked = FALSE;
@@ -72,12 +72,12 @@ return shapepool[g_rand_int(random)%5];
 
 }
 
-TetShape *tet_shape_new(TetCanvas * canvas,int x,int y,Shape type)
+TetShape *tet_shape_new(TetChecker * checker,int x,int y,Shape type)
 {
 
     TetShape *shape = g_slice_new0(TetShape);
 
-    shape->canvas = canvas;
+    shape->checker = checker;
     shape->x = shape->lx = x;
     shape->y = shape->ly = y;
     shape->type = type;
@@ -146,19 +146,19 @@ CollisionType tet_shape_is_collision(TetShape * shape)
     
     }
 
-	if (x >= shape->canvas->height) {
+	if (x >= shape->checker->height) {
 	    type |= COLLISION_BOTTOM;
 	    g_message("BOTTOM[%d,%d]", x, y);
 //        break;
 	}
 	/*
-	   if (y>=CANVAS_WIDTH){//this case need to adjust to align border
+	   if (y>=CHECKER_WIDTH){//this case need to adjust to align border
 	   type=COLLISION_SIDE;
 	   break;
 	   }
 
 	 */
-	if (is_filled(shape->canvas, x, y)) {
+	if (is_filled(shape->checker, x, y)) {
 	    type |= COLLISION_FILL;
 	    g_message("FILLED[%d,%d]", x, y);
 //          break;
@@ -175,7 +175,7 @@ void tet_shape_align_border(TetShape * shape)
 {
 
 
-    int max_y;			//the maximize x of the shape,may be ran out of the canvas border
+    int max_y;			//the maximize x of the shape,may be ran out of the checker border
 
     int i;
     for ( i = 0; i < SHAPE_STEP; i++) {
@@ -185,7 +185,7 @@ void tet_shape_align_border(TetShape * shape)
 	    max_y = y;
 	}
     }
-    int bias = max_y - CANVAS_WIDTH + 1;
+    int bias = max_y - CHECKER_WIDTH + 1;
     if (bias > 0)
 	shape->y -= bias;
 
@@ -204,9 +204,9 @@ void tet_shape_clear(TetShape * shape)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-	tet_canvas_clear_block(shape->canvas, x, y);
-    tet_canvas_fill(shape->canvas,x,y,FALSE);
-//	shape->canvas->filling[x][y] = FALSE;
+	tet_checker_clear_block(shape->checker, x, y);
+    tet_checker_fill(shape->checker,x,y,FALSE);
+//	shape->checker->filling[x][y] = FALSE;
     }
 
 }
@@ -220,9 +220,9 @@ void tet_shape_realize(TetShape * shape)
 	int lx, ly;
 	lx = shape->lpath[i].x + shape->lx;
 	ly = shape->lpath[i].y + shape->ly;
-//    if(lx>=0 && ly>=0 && ly<CANVAS_WIDTH){
-	tet_canvas_clear_block(shape->canvas, lx, ly);
-//      shape->canvas->filling[lx][ly] = FALSE;
+//    if(lx>=0 && ly>=0 && ly<CHECKER_WIDTH){
+	tet_checker_clear_block(shape->checker, lx, ly);
+//      shape->checker->filling[lx][ly] = FALSE;
 //    }
     }
 
@@ -231,9 +231,9 @@ void tet_shape_realize(TetShape * shape)
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
 	g_print("[%d,%d]\n", x, y);
-//    if(x>=0 && y>=0 && y<CANVAS_WIDTH){
-	tet_canvas_color_block(shape->canvas, x, y, SHAPE_COLOR);
-    tet_canvas_fill(shape->canvas,x,y,TRUE);
+//    if(x>=0 && y>=0 && y<CHECKER_WIDTH){
+	tet_checker_color_block(shape->checker, x, y, SHAPE_COLOR);
+    tet_checker_fill(shape->checker,x,y,TRUE);
 //    }
     }
     realize_locked = FALSE;
@@ -255,9 +255,9 @@ void tet_shape_move(TetShape*shape,int x,int y)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_canvas_clear_block(shape->canvas, x, y);
-    tet_canvas_fill(shape->canvas,x,y,FALSE);
-//	shape->canvas->filling[x][y] = FALSE;
+//      tet_checker_clear_block(shape->checker, x, y);
+    tet_checker_fill(shape->checker,x,y,FALSE);
+//	shape->checker->filling[x][y] = FALSE;
     }
 
 //    printf("\n[x:%d,y:%d]-->",shape->x,shape->y);
@@ -285,9 +285,9 @@ void tet_shape_move_up(TetShape * shape)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_canvas_clear_block(shape->canvas, x, y);
-    tet_canvas_fill(shape->canvas,x,y,FALSE);
-//	shape->canvas->filling[x][y] = FALSE;
+//      tet_checker_clear_block(shape->checker, x, y);
+    tet_checker_fill(shape->checker,x,y,FALSE);
+//	shape->checker->filling[x][y] = FALSE;
     }
 
 
@@ -313,9 +313,9 @@ void tet_shape_move_down(TetShape * shape)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_canvas_clear_block(shape->canvas, x, y);
-    tet_canvas_fill(shape->canvas,x,y,FALSE);
-	//shape->canvas->filling[x][y] = FALSE;
+//      tet_checker_clear_block(shape->checker, x, y);
+    tet_checker_fill(shape->checker,x,y,FALSE);
+	//shape->checker->filling[x][y] = FALSE;
     }
 
 
@@ -338,9 +338,9 @@ void tet_shape_move_left(TetShape * shape)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_canvas_clear_block(shape->canvas, x, y);
-    tet_canvas_fill(shape->canvas,x,y,FALSE);
-//	shape->canvas->filling[x][y] = FALSE;
+//      tet_checker_clear_block(shape->checker, x, y);
+    tet_checker_fill(shape->checker,x,y,FALSE);
+//	shape->checker->filling[x][y] = FALSE;
     }
 
 
@@ -362,9 +362,9 @@ void tet_shape_move_right(TetShape * shape)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_canvas_clear_block(shape->canvas, x, y);
-//	shape->canvas->filling[x][y] = FALSE;
-    tet_canvas_fill(shape->canvas,x,y,FALSE);
+//      tet_checker_clear_block(shape->checker, x, y);
+//	shape->checker->filling[x][y] = FALSE;
+    tet_checker_fill(shape->checker,x,y,FALSE);
     }
 
 
@@ -390,9 +390,9 @@ void tet_shape_move_restore(TetShape * shape)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_canvas_clear_block(shape->canvas, x, y);
-    tet_canvas_fill(shape->canvas,x,y,TRUE);
-//	shape->canvas->filling[x][y] = TRUE;
+//      tet_checker_clear_block(shape->checker, x, y);
+    tet_checker_fill(shape->checker,x,y,TRUE);
+//	shape->checker->filling[x][y] = TRUE;
     }
     realize_locked = FALSE;
 
@@ -409,9 +409,9 @@ void tet_shape_transform(TetShape * shape)
 	int x, y;
 	x = shape->lpath[i].x + shape->x;
 	y = shape->lpath[i].y + shape->y;
-//      tet_canvas_clear_block(shape->canvas, x, y);
-//	shape->canvas->filling[x][y] = FALSE;
-    tet_canvas_fill(shape->canvas,x,y,FALSE);
+//      tet_checker_clear_block(shape->checker, x, y);
+//	shape->checker->filling[x][y] = FALSE;
+    tet_checker_fill(shape->checker,x,y,FALSE);
     }
 
 
@@ -434,7 +434,7 @@ void tet_shape_transform(TetShape * shape)
 		shape_path_assign(shape, shape_path_I0);
 //              shape->path = shape_path_I0;
 	    shape->type = shapetype ^ 1;
-//position adjusting when out of canvas' border.
+//position adjusting when out of checker' border.
 
 	    break;
 	}
@@ -482,7 +482,7 @@ void tet_shape_transform(TetShape * shape)
 	//got collision
 	//do nothing 
     } else if (collision_type == COLLISION_BOTTOM) {
-	//to bottom of canvas
+	//to bottom of checker
 	//do nothing 
     } else {			//collision_type==COLLISION_SIDE;
 	//do nothing 
