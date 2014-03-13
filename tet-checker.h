@@ -13,18 +13,21 @@ typedef struct _checker {
 //    GtkWidget *grid[CANVAS_HEIGHT][CANVAS_WIDTH];
     GtkWidget**grid;
     GtkWidget *container;
-
+    gint bsiz;
 //    gboolean filling[CANVAS_HEIGHT][CANVAS_WIDTH];
     gboolean *filling;
+
 } TetChecker;
 
+
+static GtkWidget*block_new(int siz);
 
 
 TetChecker *tet_checker_new(int height,int width,int block_siz);
 void tet_checker_free(TetChecker * checker);
 
 void tet_checker_color_all(TetChecker * checker, char *rgba);
-void tet_canvas_clear_all(TetChecker * checker);
+void tet_checker_clear_all(TetChecker * checker);
 
 void tet_checker_color_block(TetChecker * can, gint i, gint j, char *rgba);
 void tet_checker_clear_block(TetChecker * can, gint i, gint j);

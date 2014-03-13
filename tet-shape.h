@@ -73,6 +73,7 @@ typedef struct _TetShape {
     Point lpath[4];
     TetChecker *checker;
     Shape type;
+    char*color;
 //coordination about left-bottom of shape
     gint x;
     gint y;
@@ -83,12 +84,6 @@ typedef struct _TetShape {
 
 
 
-#define FOR_PATH(shape,x,y) int i;\
-    for(i=0;i<SHAPE_STEP;i++){\
-        x=shape->path[i].x+shape->x;\
-        y=shape->path[i].y+shape->y;
-
-#define FOR_PATH_END }
 
 
 void shape_print(TetShape * shape, char *text);

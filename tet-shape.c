@@ -89,31 +89,37 @@ TetShape *tet_shape_new(TetChecker * checker,int x,int y,Shape type)
     case TET_O0:{
 //          shape->path = shape_path_O0;
 	    shape_path_assign(shape, shape_path_O0);
+        shape->color=TET_COLOR_O;
 	    break;
 	}
     case TET_I0:{
 //          shape->path = shape_path_I0;
 	    shape_path_assign(shape, shape_path_I0);
+        shape->color=TET_COLOR_I;
 	    break;
 	}
     case TET_I1:{
 //          shape->path = shape_path_I1;
 	    shape_path_assign(shape, shape_path_I1);
+        shape->color=TET_COLOR_I;
 	    break;
 	}
     case TET_Z0:{
 //          shape->path = shape_path_Z0;
 	    shape_path_assign(shape, shape_path_Z0);
+        shape->color=TET_COLOR_Z;
 	    break;
 	}
     case TET_Z1:{
 //          shape->path = shape_path_Z1;
 	    shape_path_assign(shape, shape_path_Z1);
+        shape->color=TET_COLOR_Z;
 	    break;
 	}
     default:{
 //          shape->path = shape_path_O0;
 	    shape_path_assign(shape, shape_path_O0);
+        shape->color=TET_COLOR_O;
 	}
 
     }
@@ -232,7 +238,7 @@ void tet_shape_realize(TetShape * shape)
 	y = shape->path[i].y + shape->y;
 	g_print("[%d,%d]\n", x, y);
 //    if(x>=0 && y>=0 && y<CHECKER_WIDTH){
-	tet_checker_color_block(shape->checker, x, y, SHAPE_COLOR);
+	tet_checker_color_block(shape->checker, x, y, shape->color);
     tet_checker_fill(shape->checker,x,y,TRUE);
 //    }
     }

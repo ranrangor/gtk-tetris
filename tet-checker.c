@@ -25,6 +25,68 @@ gboolean is_filled(TetChecker * checker, gint i, gint j)
 
 
 
+static gboolean block_clear_cb(GtkWidget*w,cairo_t*cr,gpointer d)
+{
+	GdkRGBA color;
+	gdk_rgba_parse(&color, COLOR_CLEAR);
+    gdk_cairo_set_source_rgba(cr,&color);
+//    cairo_set_source_rgba(cr,1,1,1,1);
+    cairo_paint(cr);
+    return TRUE;
+
+}
+
+
+static gboolean block_color_cb(GtkWidget*w,cairo_t*cr,char*colordesc)
+{
+	GdkRGBA color;
+	gdk_rgba_parse(&color, colordesc?colordesc:"rgba(0,255,255,255)");
+    gdk_cairo_set_source_rgba(cr,&color);
+    cairo_paint(cr);
+    return TRUE;
+
+}
+
+
+static GtkWidget*block_new(int siz)
+{
+
+    GtkWidget*block=gtk_drawing_area_new();
+    gtk_widget_set_size_request(block,siz,siz);
+
+    return block;
+
+}
+
+
+static void block_clear(GtkWidget*blk)
+{
+    g_signal_handlers_disconnect_by_data(blk,NULL);
+    g_signal_connect(G_OBJECT(blk),"draw",G_CALLBACK(block_clear_cb),NULL);
+    GdkWindow*dw=gtk_widget_get_window(blk);
+
+    if(dw){
+    cairo_t*cr=gdk_cairo_create(dw);
+    block_clear_cb(NULL,cr,NULL);
+    cairo_destroy(cr);
+}
+}
+
+
+
+static void block_color(GtkWidget*blk,gchar*color)
+{
+    g_signal_handlers_disconnect_by_data(blk,color);
+    g_signal_connect(G_OBJECT(blk),"draw",G_CALLBACK(block_color_cb),color);
+    GdkWindow*dw=gtk_widget_get_window(blk);
+
+    if(dw){
+    cairo_t*cr=gdk_cairo_create(dw);
+    block_color_cb(NULL,cr,color);
+    cairo_destroy(cr);
+
+    }
+}
 
 
 
@@ -43,7 +105,8 @@ TetChecker *tet_checker_new(int height,int width,int block_siz)
 
     checker->grid = (GtkWidget**)g_slice_alloc(height*width*sizeof(GtkWidget*));
     checker->filling=(gboolean*)g_slice_alloc(height*width*sizeof(gboolean));
-
+    
+    checker->bsiz=block_siz;
     
 
     int i, j;
@@ -51,8 +114,8 @@ TetChecker *tet_checker_new(int height,int width,int block_siz)
 
 	for (j = 0; j < width; j++) {
 	    checker->filling[i*width+j] = FALSE;
-	    gchar *w =""; //g_strdup_printf("[%d.%d]", i, j);
-	    checker->grid[i*width+j] = gtk_label_new(w);
+//	    gchar *w =""; //g_strdup_printf("[%d.%d]", i, j);
+	    checker->grid[i*width+j] = block_new(block_siz);//gtk_drawing_area_new();//gtk_label_new(w);
 	   // g_free(w);
 	    gtk_grid_attach(GTK_GRID(checker->container),
 			    checker->grid[i*width+j], j, i, 1, 1);
@@ -91,12 +154,16 @@ void tet_checker_color_all(TetChecker * checker, gchar * rgba)
     int height=checker->height;
     for (i = 0; i < height; i++) {
 	for (j = 0; j < width; j++) {
+        /*
 	    GdkRGBA color;
 	    gdk_rgba_parse(&color, rgba);
 	    gtk_widget_override_background_color(checker->grid[i*width+j],
 						 GTK_STATE_FLAG_NORMAL,
 						 &color);
 
+                         */
+
+        block_color(checker->grid[i*width+j],rgba);
 //        checker->filling[i][j]=TRUE;
 	}
     }
@@ -110,12 +177,16 @@ void tet_checker_clear_all(TetChecker * checker)
     int height=checker->height;
     for (i = 0; i < height; i++) {
 	for (j = 0; j < width; j++) {
+
+        block_clear(checker->grid[i*width+j]);
+        /*
 	    GdkRGBA color;
 	    gdk_rgba_parse(&color, COLOR_CLEAR);
 	    gtk_widget_override_background_color(checker->grid[i*width+j],
 						 GTK_STATE_FLAG_NORMAL,
 						 &color);
-//        checker->filling[i][j]=FALSE;
+*/
+        //        checker->filling[i][j]=FALSE;
 	}
     }
 
@@ -158,13 +229,21 @@ void tet_checker_color_block(TetChecker * checker, gint i, gint j,
     int height=checker->height;
     if (i < 0 || j < 0 || i >= height|| j >= width)
 	return;
+    /*
     GtkWidget *blk = checker->grid[i*width+j];
     GdkRGBA color;
     gdk_rgba_parse(&color, rgba);
     g_print("coloring{%d,%d}\n", i, j);
     gtk_widget_override_background_color(blk, GTK_STATE_FLAG_NORMAL,
 					 &color);
-//    checker->filling[i][j]=TRUE;
+
+    */
+
+        block_color(checker->grid[i*width+j],rgba);
+
+
+
+    //    checker->filling[i][j]=TRUE;
 
 }
 
@@ -175,7 +254,7 @@ void tet_checker_clear_block(TetChecker * checker, gint i, gint j)
     int height=checker->height;
     if (i < 0 || j < 0 || i >= height|| j >= width)
 	return;
-
+/*
     GtkWidget *blk = checker->grid[i*width+j];
     GdkRGBA color;
     gdk_rgba_parse(&color, COLOR_CLEAR);
@@ -183,7 +262,12 @@ void tet_checker_clear_block(TetChecker * checker, gint i, gint j)
     gtk_widget_override_background_color(blk, GTK_STATE_FLAG_NORMAL,
 					 &color);
 
-//    checker->filling[i][j]=FALSE;
+
+    */
+    
+        block_clear(checker->grid[i*width+j]);
+
+    //    checker->filling[i][j]=FALSE;
 
 }
 
