@@ -2,6 +2,184 @@
 
 
 
+typedef struct _block{
+GtkDrawingArea parent;
+GQuark color;
+//int x,y;
+int siz;
+
+}Block;
+
+
+typedef struct _blockClass{
+GtkDrawingAreaClass parent_class;
+
+
+}BlockClass;
+
+
+enum {
+PROP_0,
+PROP_SIZ,
+PROP_COLOR
+
+};
+
+
+
+
+
+#define TYPE_BLOCK (block_get_type())
+#define BLOCK(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj),TYPE_BLOCK,Block))
+#define BLOCK_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),TYPE_BLOCK,BlockClass))
+
+G_DEFINE_TYPE(Block,block,GTK_TYPE_DRAWING_AREA)
+
+
+
+static void block_init(Block*blk)
+{
+
+
+}
+
+
+static void block_get_property(GObject*obj,guint prop_id,GValue *value, GParamSpec* pspec)
+{
+Block*bobj=BLOCK(obj);
+
+switch(prop_id)
+{
+    case PROP_SIZ:
+        g_value_set_int(value,bobj->siz);
+        break;
+    case PROP_COLOR:
+        g_value_set_string(value,g_quark_to_string(bobj->color));
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(obj,prop_id,pspec);
+        break;
+
+}
+
+}
+
+
+static void block_set_property(GObject*obj,guint prop_id,const GValue *value, GParamSpec* pspec)
+{
+Block*bobj=BLOCK(obj);
+
+switch(prop_id)
+{
+    case PROP_SIZ:
+        bobj->siz=g_value_get_int(value);
+        gtk_widget_set_size_request(GTK_WIDGET(obj),bobj->siz,bobj->siz);
+        break;
+    case PROP_COLOR:
+        bobj->color=g_quark_from_string(g_value_get_string(value));
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(obj,prop_id,pspec);
+        break;
+
+}
+gtk_widget_queue_draw(GTK_WIDGET(obj));
+
+}
+
+
+static gboolean block_draw(GtkWidget*w,cairo_t* cr)
+{
+
+    Block*blk=BLOCK(w);
+
+    GdkRGBA color;
+    gdk_rgba_parse(&color,g_quark_to_string(blk->color));
+    gdk_cairo_set_source_rgba(cr,&color);
+
+    cairo_rectangle(cr,0,0,blk->siz,blk->siz);
+    cairo_set_line_width(cr,1);
+    cairo_fill_preserve(cr);
+    cairo_set_source_rgb(cr,0.1,0.1,0.1);
+    cairo_stroke(cr);
+    return FALSE;
+
+
+
+}
+
+
+
+
+static void block_class_init(BlockClass*klass)
+{
+
+    GtkWidgetClass* wclass=GTK_WIDGET_CLASS(klass);
+    GObjectClass*gclass=G_OBJECT_CLASS(klass);
+
+    gclass->set_property=block_set_property;
+    gclass->get_property=block_get_property;
+
+    wclass->draw=block_draw;
+
+
+
+    g_object_class_install_property(gclass,PROP_SIZ,
+                g_param_spec_int("size","Size","size of block",1,100,10,G_PARAM_READWRITE));
+
+
+    g_object_class_install_property(gclass,PROP_COLOR,
+                g_param_spec_string("color","Color-Desc","Quark of color descripter for parse",COLOR_CLEAR,G_PARAM_READWRITE));
+
+
+
+
+}
+
+void block_color(Block*blk,char*color_desc)
+{
+
+
+    g_object_set(G_OBJECT(blk),"color",color_desc,NULL);
+
+}
+
+
+
+void block_clear(Block*blk)
+{
+    
+    g_object_set(G_OBJECT(blk),"color",COLOR_CLEAR,NULL);
+
+
+}
+
+
+void block_set_size(Block*blk,int size)
+{
+
+    g_object_set(G_OBJECT(blk),"size",size,NULL);
+
+
+}
+
+
+void block_get_color(Block*blk,char**color)
+{
+g_object_get(G_OBJECT(blk),"color",&*color,NULL);
+
+}
+
+
+
+GtkWidget* newBlock(gchar*color,int siz)
+{
+return (GtkWidget*)g_object_new(TYPE_BLOCK,"color",color,"size",siz,NULL);
+
+}
+
+
+
 
 gboolean is_filled(TetChecker * checker, gint i, gint j)
 {
@@ -24,103 +202,6 @@ gboolean is_filled(TetChecker * checker, gint i, gint j)
 }
 
 
-
-static gboolean block_clear_cb(GtkWidget*w,cairo_t*cr,gpointer d)
-{
-	GdkRGBA color;
-	gdk_rgba_parse(&color, COLOR_CLEAR);
-    gdk_cairo_set_source_rgba(cr,&color);
-//    cairo_set_source_rgba(cr,1,1,1,1);
-    cairo_paint(cr);
-//    g_print("clear  draw cb\t");
-    return FALSE;
-
-}
-
-
-static gboolean block_color_cb(GtkWidget*w,cairo_t*cr,char*colordesc)
-{
-	GdkRGBA color;
-	gdk_rgba_parse(&color, colordesc?colordesc:"rgba(0,255,255,255)");
-    gdk_cairo_set_source_rgba(cr,&color);
-    cairo_rectangle(cr,0,0,gtk_widget_get_allocated_width(w),gtk_widget_get_allocated_height(w));
-    cairo_set_line_width(cr,3.0);
-    cairo_fill_preserve(cr);
-    cairo_set_source_rgb(cr,0.1,0.1,0.1);
-    cairo_stroke(cr);
-
-//    g_print("COLOR  draw cb\t");
-    return FALSE;
-
-}
-
-
-static GtkWidget*block_new(int siz)
-{
-
-    GtkWidget*block=gtk_drawing_area_new();
-    gtk_widget_set_size_request(block,siz,siz);
-
-    return block;
-
-}
-
-
-static void block_clear(GtkWidget*blk)
-{
-//    g_signal_handlers_disconnect_by_data(blk,NULL);
-    guint signo=g_signal_lookup("draw",G_TYPE_OBJECT);
-    if(signo!=0)
-        g_signal_handler_disconnect(blk,signo);
-    g_signal_connect(G_OBJECT(blk),"draw",G_CALLBACK(block_clear_cb),NULL);
-    gtk_widget_queue_draw(blk);
-    /*
-    GdkWindow*dw=gtk_widget_get_window(blk);
-    if(dw){
-        g_print("{{{{{{{{");
-    cairo_t*cr=gdk_cairo_create(dw);
-    block_clear_cb(NULL,cr,NULL);
-    cairo_destroy(cr);
-        g_print("}}}}}}}}");
-        }
-        
-        */
-}
-
-
-
-static void block_color(GtkWidget*blk,gchar*color)
-{
-//    g_signal_handlers_disconnect_by_data(blk,color);
-    guint signo=g_signal_lookup("draw",G_TYPE_OBJECT);
-    if(signo!=0)
-        g_signal_handler_disconnect(blk,signo);
-
-    
-    g_signal_connect(G_OBJECT(blk),"draw",G_CALLBACK(block_color_cb),color);
-    gtk_widget_queue_draw(blk);
-
-    /*
-    GdkWindow*dw=gtk_widget_get_window(blk);
-
-    if(dw){
-        g_print("{{{{{{{{");
-    cairo_t*cr=gdk_cairo_create(dw);
-    block_color_cb(NULL,cr,color);
-    cairo_destroy(cr);
-        g_print("}}}}}}}}");
-    }
-*/
-    
-}
-
-
-
-
-
-
-
-
 TetChecker *tet_checker_new(int height,int width,int block_siz)
 {
     TetChecker *checker = g_slice_new(TetChecker);
@@ -141,12 +222,12 @@ TetChecker *tet_checker_new(int height,int width,int block_siz)
 	for (j = 0; j < width; j++) {
 	    checker->filling[i*width+j] = FALSE;
 //	    gchar *w =""; //g_strdup_printf("[%d.%d]", i, j);
-	    checker->grid[i*width+j] = block_new(block_siz);//gtk_drawing_area_new();//gtk_label_new(w);
+	    checker->grid[i*width+j] =newBlock(COLOR_CLEAR,block_siz);// block_new(block_siz);//gtk_drawing_area_new();//gtk_label_new(w);
 	   // g_free(w);
 	    gtk_grid_attach(GTK_GRID(checker->container),
 			    checker->grid[i*width+j], j, i, 1, 1);
-	    gtk_widget_set_size_request(checker->grid[i*width+j], block_siz,
-					block_siz);
+//	    gtk_widget_set_size_request(checker->grid[i*width+j], block_siz,
+//					block_siz);
 	}
 
     }
@@ -180,16 +261,7 @@ void tet_checker_color_all(TetChecker * checker, gchar * rgba)
     int height=checker->height;
     for (i = 0; i < height; i++) {
 	for (j = 0; j < width; j++) {
-        /*
-	    GdkRGBA color;
-	    gdk_rgba_parse(&color, rgba);
-	    gtk_widget_override_background_color(checker->grid[i*width+j],
-						 GTK_STATE_FLAG_NORMAL,
-						 &color);
-
-                         */
-
-        block_color(checker->grid[i*width+j],rgba);
+        block_color(BLOCK(checker->grid[i*width+j]),rgba);
 //        checker->filling[i][j]=TRUE;
 	}
     }
@@ -204,15 +276,8 @@ void tet_checker_clear_all(TetChecker * checker)
     for (i = 0; i < height; i++) {
 	for (j = 0; j < width; j++) {
 
-        block_clear(checker->grid[i*width+j]);
-        /*
-	    GdkRGBA color;
-	    gdk_rgba_parse(&color, COLOR_CLEAR);
-	    gtk_widget_override_background_color(checker->grid[i*width+j],
-						 GTK_STATE_FLAG_NORMAL,
-						 &color);
-*/
-        //        checker->filling[i][j]=FALSE;
+        block_clear(BLOCK(checker->grid[i*width+j]));
+       //        checker->filling[i][j]=FALSE;
 	}
     }
 
@@ -241,10 +306,6 @@ void tet_checker_fill_all(TetChecker * checker,gboolean fill)
 	}
     }
 
-
-
-
-
 }
 
 void tet_checker_color_block(TetChecker * checker, gint i, gint j,
@@ -255,19 +316,7 @@ void tet_checker_color_block(TetChecker * checker, gint i, gint j,
     int height=checker->height;
     if (i < 0 || j < 0 || i >= height|| j >= width)
 	return;
-    /*
-    GtkWidget *blk = checker->grid[i*width+j];
-    GdkRGBA color;
-    gdk_rgba_parse(&color, rgba);
-    g_print("coloring{%d,%d}\n", i, j);
-    gtk_widget_override_background_color(blk, GTK_STATE_FLAG_NORMAL,
-					 &color);
-
-    */
-
-        block_color(checker->grid[i*width+j],rgba);
-
-
+        block_color(BLOCK(checker->grid[i*width+j]),rgba);
 
     //    checker->filling[i][j]=TRUE;
 
@@ -280,34 +329,10 @@ void tet_checker_clear_block(TetChecker * checker, gint i, gint j)
     int height=checker->height;
     if (i < 0 || j < 0 || i >= height|| j >= width)
 	return;
-/*
-    GtkWidget *blk = checker->grid[i*width+j];
-    GdkRGBA color;
-    gdk_rgba_parse(&color, COLOR_CLEAR);
-    g_print("clearing{%d,%d}\n", i, j);
-    gtk_widget_override_background_color(blk, GTK_STATE_FLAG_NORMAL,
-					 &color);
-
-
-    */
     
-        block_clear(checker->grid[i*width+j]);
-
+        block_clear(BLOCK(checker->grid[i*width+j]));
     //    checker->filling[i][j]=FALSE;
 
-}
-
-
-
-gboolean tet_checker_copy_block(TetChecker*checker,int i,int j,int ii,int jj)
-{
-
-
-
-}
-
-gboolean tet_checker_copy_fill(TetChecker*checker,int i,int j,int ii,int jj)
-{
 }
 
 
@@ -341,15 +366,17 @@ int tet_checker_eliminate(TetChecker*checker,int baseline)
             for(jj=0;jj<width;jj++){
             
                 if(is_filled(checker,ii,jj)){
-                tet_checker_color_block(checker,ii+1,jj,COLOR_FILL);
+                char *blkcolor;
+                block_get_color(BLOCK(checker->grid[ii*width+jj]),&blkcolor);
+//                char*blkcolor=g_quark_to_string(BLOCK(checker->grid[ii*width+jj])->color);
+//                g_object_get(G_OBJECT(checker->grid[ii*width+jj]),"color",&blkcolor,NULL);
+                tet_checker_color_block(checker,ii+1,jj,blkcolor);
                 tet_checker_fill(checker,ii+1,jj,TRUE);
                 }else{
                 tet_checker_clear_block(checker,ii+1,jj);
                 tet_checker_fill(checker,ii+1,jj,FALSE);
                 
                 }
-//            tet_checker_copy_block(checker,ii,jj,ii+1,jj);
-//            tet_checker_copy_fill(checker,ii,jj,ii+1,jj);
             }
         
         }

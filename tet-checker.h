@@ -20,7 +20,7 @@ typedef struct _checker {
 } TetChecker;
 
 
-static GtkWidget*block_new(int siz);
+//static GtkWidget*block_new(int siz);
 
 
 TetChecker *tet_checker_new(int height,int width,int block_siz);
