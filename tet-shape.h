@@ -11,19 +11,19 @@ typedef enum _CollisionType {
     COLLISION_NONE = 0,
     COLLISION_FILL = 1,
     COLLISION_BOTTOM = 2,
-    COLLISION_TOP= 4
+    COLLISION_TOP = 4
 //    COLLISION_DOWN = 4
 //,COLLISION_SIDE=4
 } CollisionType;
 
 
 
-typedef enum _Shape {		
+typedef enum _Shape {
     /*
-	 *    ##
-	 *    ##
-	 *
-	 * */
+     *    ##
+     *    ##
+     *
+     * */
     TET_O0 = 4,
 
     /*    #
@@ -47,7 +47,7 @@ typedef enum _Shape {
      *    ##
      *
      * */
-//    TET_L0=32,TET_L1,TET_L2,TET_L3,
+    TET_L0 = 32, TET_L1, TET_L2, TET_L3,
 
     /*
      *    #
@@ -73,7 +73,8 @@ typedef struct _TetShape {
     Point lpath[4];
     TetChecker *checker;
     Shape type;
-    char*color;
+    Shape ltype;
+    char *color;
 //coordination about left-bottom of shape
     gint x;
     gint y;
@@ -96,14 +97,15 @@ void shape_path_save(TetShape * shape);
 void shape_path_swap(TetShape * shape);
 //static void shape_path_fill()
 
-TetShape *tet_shape_new(TetChecker * checker, int x,int y,Shape type);
+TetShape *tet_shape_new(TetChecker * checker, int x, int y, Shape type);
 void tet_shape_free(TetShape * shape);
 
 void tet_shape_transform(TetShape * shape);
+void tet_shape_transform_restore(TetShape * shape);
 static void tet_shape_align_border(TetShape * ahape);	//invoked by transform only;
 CollisionType tet_shape_is_collision(TetShape * shape);
 
-void tet_shape_move(TetShape*shape,int x,int y);
+void tet_shape_move(TetShape * shape, int x, int y);
 void tet_shape_move_up(TetShape * shape);
 void tet_shape_move_down(TetShape * shape);
 void tet_shape_move_left(TetShape * shape);

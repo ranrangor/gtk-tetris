@@ -5,11 +5,15 @@
 volatile static gboolean realize_locked = FALSE;
 
 
-Point shape_path_O0[4] = { {0, 0}, {0, 1}, {-1, 0}, {-1, 1} };
+Point shape_path_O0[4] = { {0, 1}, {0, 2}, {-1, 1}, {-1, 2} };
 Point shape_path_I0[4] = { {0, 0}, {0, 1}, {0, 2}, {0, 3} };
-Point shape_path_I1[4] = { {0, 0}, {-1, 0}, {-2, 0}, {-3, 0} };
+Point shape_path_I1[4] = { {0, 1}, {-1, 1}, {-2, 1}, {-3, 1} };
 Point shape_path_Z0[4] = { {-1, 0}, {-1, 1}, {0, 1}, {0, 2} };
 Point shape_path_Z1[4] = { {0, 0}, {-1, 0}, {-1, 1}, {-2, 1} };
+Point shape_path_L0[4] = { {0, 1}, {0, 2}, {-1, 1}, {-2, 1} };
+Point shape_path_L1[4] = { {0, 1}, {-1, 1}, {-1, 2}, {-1, 3} };
+Point shape_path_L2[4] = { {-2, 1}, {-2, 2}, {-1, 2}, {0, 2} };
+Point shape_path_L3[4] = { {0, 1}, {0, 2}, {0, 3}, {-1, 3} };
 
 
 
@@ -33,9 +37,9 @@ void shape_path_swap(TetShape * shape)
     int i;
     Point p;
     for (i = 0; i < SHAPE_STEP; i++) {
-        p=shape->lpath[i];
-	    shape->lpath[i] = shape->path[i];
-        shape->path[i] = p;
+	p = shape->lpath[i];
+	shape->lpath[i] = shape->path[i];
+	shape->path[i] = p;
     }
 
 }
@@ -64,15 +68,17 @@ void shape_path_assign(TetShape * shape, Point * path)
 
 Shape get_shape_type()
 {
-static GRand*random;
-random=g_rand_new();
-static Shape shapepool[5]={TET_O0,TET_I0,TET_I1,TET_Z0,TET_Z1};
+    static GRand *random;
+    random = g_rand_new();
+    static Shape shapepool[] =
+	{ TET_O0, TET_I0, TET_I1, TET_Z0, TET_Z1, TET_L0, TET_L1, TET_L2,
+TET_L3 };
 
-return shapepool[g_rand_int(random)%5];
+    return shapepool[g_rand_int(random) % 9];
 
 }
 
-TetShape *tet_shape_new(TetChecker * checker,int x,int y,Shape type)
+TetShape *tet_shape_new(TetChecker * checker, int x, int y, Shape type)
 {
 
     TetShape *shape = g_slice_new0(TetShape);
@@ -89,37 +95,60 @@ TetShape *tet_shape_new(TetChecker * checker,int x,int y,Shape type)
     case TET_O0:{
 //          shape->path = shape_path_O0;
 	    shape_path_assign(shape, shape_path_O0);
-        shape->color=TET_COLOR_O;
+	    shape->color = TET_COLOR_O;
 	    break;
 	}
     case TET_I0:{
 //          shape->path = shape_path_I0;
 	    shape_path_assign(shape, shape_path_I0);
-        shape->color=TET_COLOR_I;
+	    shape->color = TET_COLOR_I;
 	    break;
 	}
     case TET_I1:{
 //          shape->path = shape_path_I1;
 	    shape_path_assign(shape, shape_path_I1);
-        shape->color=TET_COLOR_I;
+	    shape->color = TET_COLOR_I;
 	    break;
 	}
     case TET_Z0:{
 //          shape->path = shape_path_Z0;
 	    shape_path_assign(shape, shape_path_Z0);
-        shape->color=TET_COLOR_Z;
+	    shape->color = TET_COLOR_Z;
 	    break;
 	}
     case TET_Z1:{
 //          shape->path = shape_path_Z1;
 	    shape_path_assign(shape, shape_path_Z1);
-        shape->color=TET_COLOR_Z;
+	    shape->color = TET_COLOR_Z;
 	    break;
 	}
+    case TET_L0:{
+	    shape_path_assign(shape, shape_path_L0);
+	    shape->color = TET_COLOR_L;
+	    break;
+	}
+    case TET_L1:{
+	    shape_path_assign(shape, shape_path_L1);
+	    shape->color = TET_COLOR_L;
+	    break;
+	}
+    case TET_L2:{
+	    shape_path_assign(shape, shape_path_L2);
+	    shape->color = TET_COLOR_L;
+	    break;
+	}
+    case TET_L3:{
+	    shape_path_assign(shape, shape_path_L3);
+	    shape->color = TET_COLOR_L;
+	    break;
+	}
+
+
+
     default:{
 //          shape->path = shape_path_O0;
 	    shape_path_assign(shape, shape_path_O0);
-        shape->color=TET_COLOR_O;
+	    shape->color = TET_COLOR_O;
 	}
 
     }
@@ -145,17 +174,16 @@ CollisionType tet_shape_is_collision(TetShape * shape)
 	y = shape->path[i].y + shape->y;
 
 
-    if(x<0){
-    
-        type|=COLLISION_TOP;
+	if (x < 0) {
+
+	    type |= COLLISION_TOP;
 	    g_message("TOP[%d,%d]", x, y);
-    
-    }
+
+	}
 
 	if (x >= shape->checker->height) {
 	    type |= COLLISION_BOTTOM;
 	    g_message("BOTTOM[%d,%d]", x, y);
-//        break;
 	}
 	/*
 	   if (y>=CHECKER_WIDTH){//this case need to adjust to align border
@@ -211,8 +239,8 @@ void tet_shape_clear(TetShape * shape)
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
 	tet_checker_clear_block(shape->checker, x, y);
-    tet_checker_fill(shape->checker,x,y,FALSE);
-//	shape->checker->filling[x][y] = FALSE;
+	tet_checker_fill(shape->checker, x, y, FALSE);
+//      shape->checker->filling[x][y] = FALSE;
     }
 
 }
@@ -239,7 +267,7 @@ void tet_shape_realize(TetShape * shape)
 	g_print("[%d,%d]\n", x, y);
 //    if(x>=0 && y>=0 && y<CHECKER_WIDTH){
 	tet_checker_color_block(shape->checker, x, y, shape->color);
-    tet_checker_fill(shape->checker,x,y,TRUE);
+	tet_checker_fill(shape->checker, x, y, TRUE);
 //    }
     }
     realize_locked = FALSE;
@@ -247,7 +275,7 @@ void tet_shape_realize(TetShape * shape)
 
 }
 
-void tet_shape_move(TetShape*shape,int x,int y)
+void tet_shape_move(TetShape * shape, int x, int y)
 {
 
     int i;
@@ -262,8 +290,8 @@ void tet_shape_move(TetShape*shape,int x,int y)
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
 //      tet_checker_clear_block(shape->checker, x, y);
-    tet_checker_fill(shape->checker,x,y,FALSE);
-//	shape->checker->filling[x][y] = FALSE;
+	tet_checker_fill(shape->checker, x, y, FALSE);
+//      shape->checker->filling[x][y] = FALSE;
     }
 
 //    printf("\n[x:%d,y:%d]-->",shape->x,shape->y);
@@ -292,8 +320,8 @@ void tet_shape_move_up(TetShape * shape)
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
 //      tet_checker_clear_block(shape->checker, x, y);
-    tet_checker_fill(shape->checker,x,y,FALSE);
-//	shape->checker->filling[x][y] = FALSE;
+	tet_checker_fill(shape->checker, x, y, FALSE);
+//      shape->checker->filling[x][y] = FALSE;
     }
 
 
@@ -320,7 +348,7 @@ void tet_shape_move_down(TetShape * shape)
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
 //      tet_checker_clear_block(shape->checker, x, y);
-    tet_checker_fill(shape->checker,x,y,FALSE);
+	tet_checker_fill(shape->checker, x, y, FALSE);
 	//shape->checker->filling[x][y] = FALSE;
     }
 
@@ -345,8 +373,8 @@ void tet_shape_move_left(TetShape * shape)
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
 //      tet_checker_clear_block(shape->checker, x, y);
-    tet_checker_fill(shape->checker,x,y,FALSE);
-//	shape->checker->filling[x][y] = FALSE;
+	tet_checker_fill(shape->checker, x, y, FALSE);
+//      shape->checker->filling[x][y] = FALSE;
     }
 
 
@@ -369,8 +397,8 @@ void tet_shape_move_right(TetShape * shape)
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
 //      tet_checker_clear_block(shape->checker, x, y);
-//	shape->checker->filling[x][y] = FALSE;
-    tet_checker_fill(shape->checker,x,y,FALSE);
+//      shape->checker->filling[x][y] = FALSE;
+	tet_checker_fill(shape->checker, x, y, FALSE);
     }
 
 
@@ -397,12 +425,28 @@ void tet_shape_move_restore(TetShape * shape)
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
 //      tet_checker_clear_block(shape->checker, x, y);
-    tet_checker_fill(shape->checker,x,y,TRUE);
-//	shape->checker->filling[x][y] = TRUE;
+	tet_checker_fill(shape->checker, x, y, TRUE);
+//      shape->checker->filling[x][y] = TRUE;
     }
     realize_locked = FALSE;
 
 }
+
+
+
+
+void tet_shape_transform_restore(TetShape* shape)
+{
+
+tet_shape_move_restore(shape);
+
+//restore type
+shape->type=shape->ltype;
+
+
+}
+
+
 
 
 void tet_shape_transform(TetShape * shape)
@@ -416,9 +460,10 @@ void tet_shape_transform(TetShape * shape)
 	x = shape->lpath[i].x + shape->x;
 	y = shape->lpath[i].y + shape->y;
 //      tet_checker_clear_block(shape->checker, x, y);
-//	shape->checker->filling[x][y] = FALSE;
-    tet_checker_fill(shape->checker,x,y,FALSE);
+//      shape->checker->filling[x][y] = FALSE;
+	tet_checker_fill(shape->checker, x, y, FALSE);
     }
+    shape->ltype=shape->type;
 
 
 
@@ -454,30 +499,38 @@ void tet_shape_transform(TetShape * shape)
 	    shape->type = shapetype ^ 1;
 	    break;
 	}
-/*
-    case TET_L0:{
-                
-        if(shapetype&3==0)
-            shape->path=shape_path_Z1;
-        else
-            shape->path=shape_path_Z0;
-        break;
-                
-                
-                
-                }
 
-*/
+    case TET_L0:{
+
+	    if ((shapetype&3) == 0)
+		shape_path_assign(shape, shape_path_L1);
+	    else if ((shapetype&3) == 1)
+		shape_path_assign(shape, shape_path_L2);
+	    else if ((shapetype&3) == 2)
+		shape_path_assign(shape, shape_path_L3);
+	    else {
+		shape_path_assign(shape, shape_path_L0);
+	    }
+
+//        shape->type=shapetype&(~3)+(++subtype)%4;
+	    shape->type = (shapetype&(~3) )| ((1+shapetype) & 3);
+	    break;
+
+
+
+	}
+
+
     default:{
 
 	    printf("Something Error..!\n");
 
 	}
     }
-    shape->lx=shape->x;
-    shape->ly=shape->y;
+    shape->lx = shape->x;
+    shape->ly = shape->y;
 
-    realize_locked=FALSE;
+    realize_locked = FALSE;
 /*
     CollisionType collision_type = COLLISION_NONE;
     collision_type = tet_shape_is_collision(shape);

@@ -36,6 +36,7 @@ void tet_window_set_info(TetWin*win,char*text);
 void tet_window_set_shape(TetWin*win,TetShape*shape);
 //void tet_window
 
+void tet_window_over(TetWin*tetwin);
 void tet_window_reset(TetWin*win);
 
 

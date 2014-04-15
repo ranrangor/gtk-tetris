@@ -32,7 +32,8 @@ static gboolean block_clear_cb(GtkWidget*w,cairo_t*cr,gpointer d)
     gdk_cairo_set_source_rgba(cr,&color);
 //    cairo_set_source_rgba(cr,1,1,1,1);
     cairo_paint(cr);
-    return TRUE;
+//    g_print("clear  draw cb\t");
+    return FALSE;
 
 }
 
@@ -42,8 +43,14 @@ static gboolean block_color_cb(GtkWidget*w,cairo_t*cr,char*colordesc)
 	GdkRGBA color;
 	gdk_rgba_parse(&color, colordesc?colordesc:"rgba(0,255,255,255)");
     gdk_cairo_set_source_rgba(cr,&color);
-    cairo_paint(cr);
-    return TRUE;
+    cairo_rectangle(cr,0,0,gtk_widget_get_allocated_width(w),gtk_widget_get_allocated_height(w));
+    cairo_set_line_width(cr,3.0);
+    cairo_fill_preserve(cr);
+    cairo_set_source_rgb(cr,0.1,0.1,0.1);
+    cairo_stroke(cr);
+
+//    g_print("COLOR  draw cb\t");
+    return FALSE;
 
 }
 
@@ -61,31 +68,50 @@ static GtkWidget*block_new(int siz)
 
 static void block_clear(GtkWidget*blk)
 {
-    g_signal_handlers_disconnect_by_data(blk,NULL);
+//    g_signal_handlers_disconnect_by_data(blk,NULL);
+    guint signo=g_signal_lookup("draw",G_TYPE_OBJECT);
+    if(signo!=0)
+        g_signal_handler_disconnect(blk,signo);
     g_signal_connect(G_OBJECT(blk),"draw",G_CALLBACK(block_clear_cb),NULL);
+    gtk_widget_queue_draw(blk);
+    /*
     GdkWindow*dw=gtk_widget_get_window(blk);
-
     if(dw){
+        g_print("{{{{{{{{");
     cairo_t*cr=gdk_cairo_create(dw);
     block_clear_cb(NULL,cr,NULL);
     cairo_destroy(cr);
-}
+        g_print("}}}}}}}}");
+        }
+        
+        */
 }
 
 
 
 static void block_color(GtkWidget*blk,gchar*color)
 {
-    g_signal_handlers_disconnect_by_data(blk,color);
+//    g_signal_handlers_disconnect_by_data(blk,color);
+    guint signo=g_signal_lookup("draw",G_TYPE_OBJECT);
+    if(signo!=0)
+        g_signal_handler_disconnect(blk,signo);
+
+    
     g_signal_connect(G_OBJECT(blk),"draw",G_CALLBACK(block_color_cb),color);
+    gtk_widget_queue_draw(blk);
+
+    /*
     GdkWindow*dw=gtk_widget_get_window(blk);
 
     if(dw){
+        g_print("{{{{{{{{");
     cairo_t*cr=gdk_cairo_create(dw);
     block_color_cb(NULL,cr,color);
     cairo_destroy(cr);
-
+        g_print("}}}}}}}}");
     }
+*/
+    
 }
 
 
@@ -273,16 +299,17 @@ void tet_checker_clear_block(TetChecker * checker, gint i, gint j)
 
 
 
-/*
 gboolean tet_checker_copy_block(TetChecker*checker,int i,int j,int ii,int jj)
 {
+
+
+
 }
 
 gboolean tet_checker_copy_fill(TetChecker*checker,int i,int j,int ii,int jj)
 {
 }
 
-*/
 
 
 int tet_checker_eliminate(TetChecker*checker,int baseline)

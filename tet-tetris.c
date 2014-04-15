@@ -34,7 +34,7 @@
     tet_window_set_info(win,".");
     tet_shape_free(win->shape);
     
-    col=tet_shape_is_collision(win->shape);
+//    col=tet_shape_is_collision(win->shape);
 /*    if(COLLISION_TOP&col){
         g_message("Game Over @1");
         return FALSE;  
@@ -44,23 +44,22 @@
 //    win->shape=nextshape;
     tet_window_set_shape(win,nextshape);
 //    gint tet_type=g_rand_int(random)%5;
-
+    col=tet_shape_is_collision(win->shape);
+    if(COLLISION_FILL&col){
+        g_message("GameOver..");
+        tet_window_over(win);
+        return FALSE;
+    }
+   tet_shape_realize(win->shape);
+ 
     Shape next=get_shape_type();
     nextshape=tet_shape_new(checker,0,3,next);
     tet_window_set_preview(win,next);
 
-    col=tet_shape_is_collision(win->shape);
-    if(COLLISION_FILL&col){
-        g_message("GameOver..");
-        return FALSE;
-    }
-    tet_shape_realize(win->shape);
-    /**/
     return TRUE;
 
-    }
-    
-    else{
+    }else{
+
     tet_shape_realize(win->shape);
     
     return TRUE;
@@ -72,8 +71,9 @@
 gboolean move_cb(GtkWidget * widget, GdkEventKey * event, TetWin*win)
 {
 TetShape * shape=win->shape;
-    if (event->type == GDK_KEY_RELEASE) {
-	if (event->keyval == GDK_KEY_Left) {
+    if (event->type == GDK_KEY_PRESS) {
+	if (event->keyval == GDK_KEY_Left||
+            event->keyval == GDK_KEY_h) {
 	    tet_shape_move_left(shape);
 	    if (tet_shape_is_collision(shape) & COLLISION_FILL) {
 		tet_shape_move_restore(shape);
@@ -81,7 +81,8 @@ TetShape * shape=win->shape;
 		tet_shape_realize(shape);
 	    }
 
-	} else if (event->keyval == GDK_KEY_Right) {
+	} else if (event->keyval == GDK_KEY_Right||
+            event->keyval == GDK_KEY_l) {
 
 	    tet_shape_move_right(shape);
 	    if (tet_shape_is_collision(shape) & COLLISION_FILL) {
@@ -89,21 +90,25 @@ TetShape * shape=win->shape;
 	    } else {
 		tet_shape_realize(shape);
 	    }
-	} else if (event->keyval == GDK_KEY_Down) {
-
+	} else if (event->keyval == GDK_KEY_Down||
+            event->keyval == GDK_KEY_j) {
+        timeout_act(win);
+/*
 	    tet_shape_move_down(shape);
 	    if (tet_shape_is_collision(shape) & COLLISION_FILL) {
 		tet_shape_move_restore(shape);
 	    } else {
 		tet_shape_realize(shape);
 	    }
-
+*/
 	}
-else if(event->keyval==GDK_KEY_Up){
+else if(event->keyval==GDK_KEY_Up||
+        event->keyval == GDK_KEY_k){
 
 tet_shape_transform(shape);
 if(tet_shape_is_collision(shape)&COLLISION_FILL){
-    tet_shape_move_restore(shape);
+//    tet_shape_move_restore(shape);
+    tet_shape_transform_restore(shape);
 }else{
 
 tet_shape_realize(shape);
@@ -160,6 +165,8 @@ stop_cb (GtkWidget * widget, TetWin * tetwin)
 
     gtk_widget_destroy(msgdialog);
     gtk_widget_set_sensitive(tetwin->start,TRUE);
+    gtk_widget_set_sensitive(tetwin->pause,FALSE);
+    gtk_widget_set_sensitive(tetwin->stop,FALSE);
 
 }
 
@@ -214,13 +221,15 @@ start_cb (GtkWidget * widget, TetWin * tetwin)
     
 
 
-    tetwin->timeout=g_timeout_add(1000,(GSourceFunc)timeout_act,tetwin);
+    tetwin->timeout=g_timeout_add(800,(GSourceFunc)timeout_act,tetwin);
 
-    tetwin->key_sig_no=g_signal_connect(G_OBJECT(tetwin->window), "key-release-event",
+    tetwin->key_sig_no=g_signal_connect(G_OBJECT(tetwin->window), "key-press-event",
 		     G_CALLBACK(move_cb), tetwin);
 
 
     gtk_widget_set_sensitive(tetwin->start,FALSE);
+    gtk_widget_set_sensitive(tetwin->pause,TRUE);
+    gtk_widget_set_sensitive(tetwin->stop,TRUE);
 
 }
 
