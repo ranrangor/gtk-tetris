@@ -21,11 +21,8 @@
     /*fall*/
     tet_shape_move_down(win->shape);
 
-
     col=tet_shape_is_collision(win->shape);
-   
     if(COLLISION_FILL &col){
-
     //can not fall anymore;
     tet_shape_move_restore(win->shape);
     n_eliminated=tet_checker_eliminate(checker,win->shape->x);
@@ -34,16 +31,10 @@
     tet_window_set_info(win,".");
     tet_shape_free(win->shape);
     
-//    col=tet_shape_is_collision(win->shape);
-/*    if(COLLISION_TOP&col){
-        g_message("Game Over @1");
-        return FALSE;  
-    }
-*/
     /*get next shape*/
 //    win->shape=nextshape;
     tet_window_set_shape(win,nextshape);
-//    gint tet_type=g_rand_int(random)%5;
+
     col=tet_shape_is_collision(win->shape);
     if(COLLISION_FILL&col){
         g_message("GameOver..");
@@ -93,14 +84,6 @@ TetShape * shape=win->shape;
 	} else if (event->keyval == GDK_KEY_Down||
             event->keyval == GDK_KEY_j) {
         timeout_act(win);
-/*
-	    tet_shape_move_down(shape);
-	    if (tet_shape_is_collision(shape) & COLLISION_FILL) {
-		tet_shape_move_restore(shape);
-	    } else {
-		tet_shape_realize(shape);
-	    }
-*/
 	}
 else if(event->keyval==GDK_KEY_Up||
         event->keyval == GDK_KEY_k){
@@ -110,24 +93,12 @@ if(tet_shape_is_collision(shape)&COLLISION_FILL){
 //    tet_shape_move_restore(shape);
     tet_shape_transform_restore(shape);
 }else{
-
 tet_shape_realize(shape);
-
 }
-
 }
-
     }
-
     return TRUE;
-
 }
-
-
-
-
-
-
 
 
 
@@ -199,9 +170,6 @@ void
 start_cb (GtkWidget * widget, TetWin * tetwin)
 {
 
-//  nextshape = tet_shape_new (win->checker, 0, 0, TET_Z0);
-//  win->can_oper = TRUE;
-//  tet_window_set_preview (win, TET_Z0);
 
     tet_window_reset(tetwin);
   tet_checker_clear_all (tetwin->checker);
@@ -218,7 +186,6 @@ start_cb (GtkWidget * widget, TetWin * tetwin)
     cur=get_shape_type();
     curshape = tet_shape_new (tetwin->checker, -1, CHECKER_MID, cur);
     tetwin->shape=curshape;
-    
 
 
     tetwin->timeout=g_timeout_add(800,(GSourceFunc)timeout_act,tetwin);
@@ -250,18 +217,6 @@ random=g_rand_new();
 
   gtk_widget_show_all (tetwin->window);
 
-/*
-    nextshape = tet_shape_new (tetwin->checker, 0, 0, TET_Z0);
-  tet_window_set_preview (tetwin, TET_Z0);
-  
-    curshape = tet_shape_new (tetwin->checker, -1, 0, TET_Z1);
-    tetwin->shape=curshape;
-    
-
-    g_timeout_add(1000,(GSourceFunc)timeout_act,tetwin);
-
-
-*/
 
 
   GtkWidget*but_start=tetwin->start;

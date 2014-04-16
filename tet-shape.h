@@ -95,7 +95,6 @@ Shape get_shape_type();
 void shape_path_assign(TetShape * shape, Point * path);
 void shape_path_save(TetShape * shape);
 void shape_path_swap(TetShape * shape);
-//static void shape_path_fill()
 
 TetShape *tet_shape_new(TetChecker * checker, int x, int y, Shape type);
 void tet_shape_free(TetShape * shape);
@@ -114,6 +113,5 @@ void tet_shape_move_restore(TetShape * shape);
 
 
 void tet_shape_realize(TetShape * shape);
-//TetShape* tet_shape_save(TetShape * shape);
-//void tet_shape_clear(TetShape * shape);
+
 #endif

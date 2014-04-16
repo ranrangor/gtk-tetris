@@ -93,31 +93,26 @@ TetShape *tet_shape_new(TetChecker * checker, int x, int y, Shape type)
     switch (shape->type) {
 
     case TET_O0:{
-//          shape->path = shape_path_O0;
 	    shape_path_assign(shape, shape_path_O0);
 	    shape->color = TET_COLOR_O;
 	    break;
 	}
     case TET_I0:{
-//          shape->path = shape_path_I0;
 	    shape_path_assign(shape, shape_path_I0);
 	    shape->color = TET_COLOR_I;
 	    break;
 	}
     case TET_I1:{
-//          shape->path = shape_path_I1;
 	    shape_path_assign(shape, shape_path_I1);
 	    shape->color = TET_COLOR_I;
 	    break;
 	}
     case TET_Z0:{
-//          shape->path = shape_path_Z0;
 	    shape_path_assign(shape, shape_path_Z0);
 	    shape->color = TET_COLOR_Z;
 	    break;
 	}
     case TET_Z1:{
-//          shape->path = shape_path_Z1;
 	    shape_path_assign(shape, shape_path_Z1);
 	    shape->color = TET_COLOR_Z;
 	    break;
@@ -143,10 +138,7 @@ TetShape *tet_shape_new(TetChecker * checker, int x, int y, Shape type)
 	    break;
 	}
 
-
-
     default:{
-//          shape->path = shape_path_O0;
 	    shape_path_assign(shape, shape_path_O0);
 	    shape->color = TET_COLOR_O;
 	}
@@ -254,21 +246,18 @@ void tet_shape_realize(TetShape * shape)
 	int lx, ly;
 	lx = shape->lpath[i].x + shape->lx;
 	ly = shape->lpath[i].y + shape->ly;
-//    if(lx>=0 && ly>=0 && ly<CHECKER_WIDTH){
+
 	tet_checker_clear_block(shape->checker, lx, ly);
 //      shape->checker->filling[lx][ly] = FALSE;
-//    }
     }
 
     for (i = 0; i < SHAPE_STEP; i++) {
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-	g_print("[%d,%d]\n", x, y);
-//    if(x>=0 && y>=0 && y<CHECKER_WIDTH){
+	
 	tet_checker_color_block(shape->checker, x, y, shape->color);
 	tet_checker_fill(shape->checker, x, y, TRUE);
-//    }
     }
     realize_locked = FALSE;
     printf("\n[x:%d,y:%d]\n", shape->x, shape->y);
@@ -289,17 +278,14 @@ void tet_shape_move(TetShape * shape, int x, int y)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_checker_clear_block(shape->checker, x, y);
+
 	tet_checker_fill(shape->checker, x, y, FALSE);
-//      shape->checker->filling[x][y] = FALSE;
     }
 
-//    printf("\n[x:%d,y:%d]-->",shape->x,shape->y);
     shape->ly = shape->y;
     shape->lx = shape->x;
     shape->x = x;
     shape->y = y;
-//    printf("[x:%d,y:%d]\n",shape->x,shape->y);
 
     realize_locked = FALSE;
 
@@ -319,17 +305,14 @@ void tet_shape_move_up(TetShape * shape)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_checker_clear_block(shape->checker, x, y);
+
 	tet_checker_fill(shape->checker, x, y, FALSE);
-//      shape->checker->filling[x][y] = FALSE;
     }
 
 
-//    printf("\n[x:%d,y:%d]-->",shape->x,shape->y);
     shape->ly = shape->y;
     shape->lx = shape->x;
     shape->x -= 1;
-//    printf("[x:%d,y:%d]\n",shape->x,shape->y);
 
     realize_locked = FALSE;
 }
@@ -347,17 +330,13 @@ void tet_shape_move_down(TetShape * shape)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_checker_clear_block(shape->checker, x, y);
+
 	tet_checker_fill(shape->checker, x, y, FALSE);
-	//shape->checker->filling[x][y] = FALSE;
     }
 
-
-//    printf("\n[x:%d,y:%d]-->",shape->x,shape->y);
     shape->ly = shape->y;
     shape->lx = shape->x;
     shape->x += 1;
-//    printf("[x:%d,y:%d]\n",shape->x,shape->y);
 
     realize_locked = FALSE;
 }
@@ -372,17 +351,14 @@ void tet_shape_move_left(TetShape * shape)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_checker_clear_block(shape->checker, x, y);
+
 	tet_checker_fill(shape->checker, x, y, FALSE);
-//      shape->checker->filling[x][y] = FALSE;
     }
 
-
-//    printf("\n[x:%d,y:%d]-->",shape->x,shape->y);
     shape->lx = shape->x;
     shape->ly = shape->y;
     shape->y -= 1;		// shape->y+1;
-//    printf("[x:%d,y:%d]\n",shape->x,shape->y);
+
     realize_locked = FALSE;
 }
 
@@ -396,18 +372,14 @@ void tet_shape_move_right(TetShape * shape)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_checker_clear_block(shape->checker, x, y);
-//      shape->checker->filling[x][y] = FALSE;
+
 	tet_checker_fill(shape->checker, x, y, FALSE);
     }
 
-
-
-//    printf("\n[x:%d,y:%d]-->",shape->x,shape->y);
     shape->lx = shape->x;
     shape->ly = shape->y;
     shape->y += 1;		// shape->y+1;
-//    printf("[x:%d,y:%d]\n",shape->x,shape->y);
+
     realize_locked = FALSE;
 }
 
@@ -424,9 +396,8 @@ void tet_shape_move_restore(TetShape * shape)
 	int x, y;
 	x = shape->path[i].x + shape->x;
 	y = shape->path[i].y + shape->y;
-//      tet_checker_clear_block(shape->checker, x, y);
+
 	tet_checker_fill(shape->checker, x, y, TRUE);
-//      shape->checker->filling[x][y] = TRUE;
     }
     realize_locked = FALSE;
 
@@ -459,8 +430,7 @@ void tet_shape_transform(TetShape * shape)
 	int x, y;
 	x = shape->lpath[i].x + shape->x;
 	y = shape->lpath[i].y + shape->y;
-//      tet_checker_clear_block(shape->checker, x, y);
-//      shape->checker->filling[x][y] = FALSE;
+
 	tet_checker_fill(shape->checker, x, y, FALSE);
     }
     shape->ltype=shape->type;
@@ -479,11 +449,9 @@ void tet_shape_transform(TetShape * shape)
 	}
     case TET_I0:{
 	    if ((shapetype & 1) == 0)
-//              shape->path = shape_path_I1;
 		shape_path_assign(shape, shape_path_I1);
 	    else
 		shape_path_assign(shape, shape_path_I0);
-//              shape->path = shape_path_I0;
 	    shape->type = shapetype ^ 1;
 //position adjusting when out of checker' border.
 
@@ -492,10 +460,8 @@ void tet_shape_transform(TetShape * shape)
     case TET_Z0:{
 	    if ((shapetype & 1) == 0)
 		shape_path_assign(shape, shape_path_Z1);
-//              shape->path = shape_path_Z1;
 	    else
 		shape_path_assign(shape, shape_path_Z0);
-//              shape->path = shape_path_Z0;
 	    shape->type = shapetype ^ 1;
 	    break;
 	}
@@ -512,18 +478,14 @@ void tet_shape_transform(TetShape * shape)
 		shape_path_assign(shape, shape_path_L0);
 	    }
 
-//        shape->type=shapetype&(~3)+(++subtype)%4;
 	    shape->type = (shapetype&(~3) )| ((1+shapetype) & 3);
 	    break;
 
-
-
 	}
-
 
     default:{
 
-	    printf("Something Error..!\n");
+	    g_warning("Something Error..!\n");
 
 	}
     }
@@ -531,22 +493,6 @@ void tet_shape_transform(TetShape * shape)
     shape->ly = shape->y;
 
     realize_locked = FALSE;
-/*
-    CollisionType collision_type = COLLISION_NONE;
-    collision_type = tet_shape_is_collision(shape);
-    if (collision_type == COLLISION_NONE) {
-	//not got collision
-	tet_shape_realize(shape);
-    } else if (collision_type == COLLISION_FILL) {
-	//got collision
-	//do nothing 
-    } else if (collision_type == COLLISION_BOTTOM) {
-	//to bottom of checker
-	//do nothing 
-    } else {			//collision_type==COLLISION_SIDE;
-	//do nothing 
 
-    }
 
-*/
 }

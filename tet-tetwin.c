@@ -134,9 +134,6 @@ void tet_window_set_shape(TetWin*win,TetShape *shape)
 
 
 
-
-
-
 void tet_window_set_info(TetWin*win,char*text)
 {
 

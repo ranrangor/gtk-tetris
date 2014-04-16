@@ -5,7 +5,6 @@
 typedef struct _block{
 GtkDrawingArea parent;
 GQuark color;
-//int x,y;
 int siz;
 
 }Block;
@@ -138,36 +137,26 @@ static void block_class_init(BlockClass*klass)
 
 void block_color(Block*blk,char*color_desc)
 {
-
-
     g_object_set(G_OBJECT(blk),"color",color_desc,NULL);
-
 }
 
 
 
 void block_clear(Block*blk)
 {
-    
     g_object_set(G_OBJECT(blk),"color",COLOR_CLEAR,NULL);
-
-
 }
 
 
 void block_set_size(Block*blk,int size)
 {
-
     g_object_set(G_OBJECT(blk),"size",size,NULL);
-
-
 }
 
 
 void block_get_color(Block*blk,char**color)
 {
 g_object_get(G_OBJECT(blk),"color",&*color,NULL);
-
 }
 
 
@@ -175,7 +164,6 @@ g_object_get(G_OBJECT(blk),"color",&*color,NULL);
 GtkWidget* newBlock(gchar*color,int siz)
 {
 return (GtkWidget*)g_object_new(TYPE_BLOCK,"color",color,"size",siz,NULL);
-
 }
 
 
@@ -205,8 +193,8 @@ gboolean is_filled(TetChecker * checker, gint i, gint j)
 TetChecker *tet_checker_new(int height,int width,int block_siz)
 {
     TetChecker *checker = g_slice_new(TetChecker);
-    checker->container = gtk_grid_new();	//g_malloc(sizeof(GtkWidget*));
-//checker->grid=g_malloc_n(CHECKER_HEIGHT*CHECKER_WIDTH,sizeof(GtkWidget*) );
+    checker->container = gtk_grid_new();
+
     checker->height=height;
     checker->width=width;
 
@@ -221,13 +209,9 @@ TetChecker *tet_checker_new(int height,int width,int block_siz)
 
 	for (j = 0; j < width; j++) {
 	    checker->filling[i*width+j] = FALSE;
-//	    gchar *w =""; //g_strdup_printf("[%d.%d]", i, j);
-	    checker->grid[i*width+j] =newBlock(COLOR_CLEAR,block_siz);// block_new(block_siz);//gtk_drawing_area_new();//gtk_label_new(w);
-	   // g_free(w);
+	    checker->grid[i*width+j] =newBlock(COLOR_CLEAR,block_siz);
 	    gtk_grid_attach(GTK_GRID(checker->container),
 			    checker->grid[i*width+j], j, i, 1, 1);
-//	    gtk_widget_set_size_request(checker->grid[i*width+j], block_siz,
-//					block_siz);
 	}
 
     }
@@ -240,9 +224,7 @@ TetChecker *tet_checker_new(int height,int width,int block_siz)
 void tet_checker_free(TetChecker * checker)
 {
 
-//    g_object_unref(checker->container);
 //release all source allocated for wigdets that containing in grid.
-//
     int width=checker->width;
     int height=checker->height;
 
@@ -259,6 +241,7 @@ void tet_checker_color_all(TetChecker * checker, gchar * rgba)
     int i, j;
     int width=checker->width;
     int height=checker->height;
+
     for (i = 0; i < height; i++) {
 	for (j = 0; j < width; j++) {
         block_color(BLOCK(checker->grid[i*width+j]),rgba);
@@ -273,6 +256,7 @@ void tet_checker_clear_all(TetChecker * checker)
     int i, j;
     int width=checker->width;
     int height=checker->height;
+
     for (i = 0; i < height; i++) {
 	for (j = 0; j < width; j++) {
 
@@ -300,6 +284,7 @@ void tet_checker_fill_all(TetChecker * checker,gboolean fill)
     int i, j;
     int width=checker->width;
     int height=checker->height;
+
     for (i = 0; i < height; i++) {
 	for (j = 0; j < width; j++) {
         checker->filling[i*width+j]=fill;
@@ -311,13 +296,12 @@ void tet_checker_fill_all(TetChecker * checker,gboolean fill)
 void tet_checker_color_block(TetChecker * checker, gint i, gint j,
 			    gchar * rgba)
 {
-//    g_return_if_fail(i>=0 ||j>=0);
     int width=checker->width;
     int height=checker->height;
+
     if (i < 0 || j < 0 || i >= height|| j >= width)
 	return;
         block_color(BLOCK(checker->grid[i*width+j]),rgba);
-
     //    checker->filling[i][j]=TRUE;
 
 }
@@ -327,6 +311,7 @@ void tet_checker_clear_block(TetChecker * checker, gint i, gint j)
 {
     int width=checker->width;
     int height=checker->height;
+
     if (i < 0 || j < 0 || i >= height|| j >= width)
 	return;
     
@@ -340,7 +325,7 @@ void tet_checker_clear_block(TetChecker * checker, gint i, gint j)
 int tet_checker_eliminate(TetChecker*checker,int baseline)
 {
     int n_eliminated=0;
-    g_message("Eliminate..");
+    g_message("Eliminating..");
     int i, j;
     int width=checker->width;
     int height=checker->height;
@@ -358,18 +343,15 @@ int tet_checker_eliminate(TetChecker*checker,int baseline)
 	}
 
     if(flag){//need to eliminat current line,and move all lines beyond to down
-        g_message("Line:%d to be eliminating..",i); 
+//        g_message("Line:%d to be eliminating..",i); 
         n_eliminated+=1;
         int ii,jj;
         for (ii=i-1;ii>=0;ii--){
-        
             for(jj=0;jj<width;jj++){
             
                 if(is_filled(checker,ii,jj)){
                 char *blkcolor;
                 block_get_color(BLOCK(checker->grid[ii*width+jj]),&blkcolor);
-//                char*blkcolor=g_quark_to_string(BLOCK(checker->grid[ii*width+jj])->color);
-//                g_object_get(G_OBJECT(checker->grid[ii*width+jj]),"color",&blkcolor,NULL);
                 tet_checker_color_block(checker,ii+1,jj,blkcolor);
                 tet_checker_fill(checker,ii+1,jj,TRUE);
                 }else{
