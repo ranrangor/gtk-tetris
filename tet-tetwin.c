@@ -117,7 +117,7 @@ void tet_window_set_preview(TetWin*win,Shape type)
     /*paint a new shape with type*/
     TetShape*shape=tet_shape_new(win->preview,win->preview->height-1,0,type);
 //    tet_shape_move(shape,...);//
-    shape_print(shape,"set preview");
+//    shape_print(shape,"set preview");
     tet_shape_realize(shape);
     
     tet_shape_free(shape);

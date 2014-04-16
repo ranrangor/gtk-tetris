@@ -22,6 +22,7 @@
 #define TET_COLOR_I "rgba(255,255,0,1)"
 #define TET_COLOR_Z "rgba(0,255,0,1)"
 #define TET_COLOR_L "rgba(0,255,255,1)"
+#define TET_COLOR_T "rgba(255,0,255,1)"
 
 
 #define SHAPE_COLOR COLOR_FILL

@@ -180,7 +180,7 @@ gboolean is_filled(TetChecker * checker, gint i, gint j)
 	if (i < 0)
 	    return FALSE;
 
-	g_print("%d.", checker->filling[i*width+j]);
+//	g_print("%d.", checker->filling[i*width+j]);
 	return checker->filling[i*width+j];
 
     } else {

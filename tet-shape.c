@@ -260,7 +260,7 @@ void tet_shape_realize(TetShape * shape)
 	tet_checker_fill(shape->checker, x, y, TRUE);
     }
     realize_locked = FALSE;
-    printf("\n[x:%d,y:%d]\n", shape->x, shape->y);
+//    printf("\n[x:%d,y:%d]\n", shape->x, shape->y);
 
 }
 
