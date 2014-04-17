@@ -20,6 +20,9 @@ all:${OBJS}
 	${CC} ${CFLAGS}  $^ -o ${BINARY} ${LIBS}
 
 
+tet-tetris.o:tet-tetris.c tet-config.h
+	${CC} ${CFLAGS} -c $< -o $@
+
 tet-shape.o:tet-shape.c tet-config.h
 	${CC} ${CFLAGS} -c $< -o $@
 

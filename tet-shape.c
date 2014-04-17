@@ -14,6 +14,10 @@ Point shape_path_L0[4] = { {0, 1}, {0, 2}, {-1, 1}, {-2, 1} };
 Point shape_path_L1[4] = { {0, 1}, {-1, 1}, {-1, 2}, {-1, 3} };
 Point shape_path_L2[4] = { {-2, 1}, {-2, 2}, {-1, 2}, {0, 2} };
 Point shape_path_L3[4] = { {0, 1}, {0, 2}, {0, 3}, {-1, 3} };
+Point shape_path_T0[4] = { {0, 0}, {0, 1}, {0, 2}, {-1, 1} };
+Point shape_path_T1[4] = { {0, 0}, {-1, 0}, {-2, 0}, {-1, 1} };
+Point shape_path_T2[4] = { {-1, 0}, {-1, 1}, {-1, 2}, {0, 1} };
+Point shape_path_T3[4] = { {-1, 0}, {-1, 1}, {-2, 1}, {0, 1} };
 
 
 
@@ -72,9 +76,9 @@ Shape get_shape_type()
     random = g_rand_new();
     static Shape shapepool[] =
 	{ TET_O0, TET_I0, TET_I1, TET_Z0, TET_Z1, TET_L0, TET_L1, TET_L2,
-TET_L3 };
+TET_L3, TET_T0, TET_T1, TET_T2, TET_T3 };
 
-    return shapepool[g_rand_int(random) % 9];
+    return shapepool[g_rand_int(random) % 13];
 
 }
 
@@ -137,6 +141,29 @@ TetShape *tet_shape_new(TetChecker * checker, int x, int y, Shape type)
 	    shape->color = TET_COLOR_L;
 	    break;
 	}
+    case TET_T0:{
+	    shape_path_assign(shape, shape_path_T0);
+	    shape->color = TET_COLOR_T;
+	    break;
+	}
+    case TET_T1:{
+	    shape_path_assign(shape, shape_path_T1);
+	    shape->color = TET_COLOR_T;
+	    break;
+	}
+    case TET_T2:{
+	    shape_path_assign(shape, shape_path_T2);
+	    shape->color = TET_COLOR_T;
+	    break;
+	}
+    case TET_T3:{
+	    shape_path_assign(shape, shape_path_T3);
+	    shape->color = TET_COLOR_T;
+	    break;
+	}
+
+
+
 
     default:{
 	    shape_path_assign(shape, shape_path_O0);
@@ -480,8 +507,26 @@ void tet_shape_transform(TetShape * shape)
 
 	    shape->type = (shapetype&(~3) )| ((1+shapetype) & 3);
 	    break;
-
 	}
+
+
+    case TET_T0:{
+
+	    if ((shapetype&3) == 0)
+		shape_path_assign(shape, shape_path_T1);
+	    else if ((shapetype&3) == 1)
+		shape_path_assign(shape, shape_path_T2);
+	    else if ((shapetype&3) == 2)
+		shape_path_assign(shape, shape_path_T3);
+	    else {
+		shape_path_assign(shape, shape_path_T0);
+	    }
+
+	    shape->type = (shapetype&(~3) )| ((1+shapetype) & 3);
+	    break;
+	}
+
+
 
     default:{
 

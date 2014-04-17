@@ -54,7 +54,7 @@ typedef enum _Shape {
      *   ###
      *
      * */
-//    TET_T0=64,TET_T1,TET_T2,TET_T3,
+    TET_T0=64,TET_T1,TET_T2,TET_T3,
     TET_LAST
 } Shape;
 
