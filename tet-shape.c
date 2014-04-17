@@ -75,10 +75,13 @@ Shape get_shape_type()
     static GRand *random;
     random = g_rand_new();
     static Shape shapepool[] =
-	{ TET_O0, TET_I0, TET_I1, TET_Z0, TET_Z1, TET_L0, TET_L1, TET_L2,
-TET_L3, TET_T0, TET_T1, TET_T2, TET_T3 };
+	{ TET_O0,TET_O0,TET_O0,TET_O0,
+        TET_I0, TET_I0, TET_I0, TET_I1,
+        TET_Z0, TET_Z0, TET_Z1, TET_Z1,
+        TET_L0, TET_L1, TET_L2, TET_L3,
+        TET_T0, TET_T1, TET_T2, TET_T3 };
 
-    return shapepool[g_rand_int(random) % 13];
+    return shapepool[g_rand_int(random) % 20];
 
 }
 
